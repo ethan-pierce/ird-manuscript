@@ -37,13 +37,12 @@ regions = {
 }
 CE_split_one = ['rolige-brae', 'charcot-gletscher', 'sydbrae', 'dode-brae', 'daugaard-jensen-gletsjer']
 CE_split_two = ['vestfjord-gletsjer', 'bredegletsjer', 'magga-dan-gletsjer', 'graah-gletscher', 'kista-dan-gletsjer']
-CE_rerun = ['charcot-gletscher', 'eielson-gletsjer', 'dode-brae', 'graah-gletscher']
 
 with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    if (regions[key] == 'CE') & (key in CE_rerun):
+    if (regions[key] == 'CE') & (key in CE_split_two):
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')
