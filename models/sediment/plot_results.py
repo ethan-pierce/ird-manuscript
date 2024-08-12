@@ -2,6 +2,7 @@ import warnings
 warnings.filterwarnings("ignore", category = FutureWarning)
 
 import numpy as np
+import pandas as pd
 import pickle
 import shapely
 import matplotlib.pyplot as plt
@@ -54,6 +55,30 @@ bounds = {
     'kista-dan-gletsjer': [6.60337e5, 6.63701e5, -2.09062e6, -2.08841e6]
 }
 
+discharge_gate = {
+    'rolige-brae': 150,
+    'sermeq-avannarleq': 167,
+    'charcot-gletscher': 139,
+    'sydbrae': 152,
+    'kangiata-nunaata-sermia': 275,
+    'eielson-gletsjer': 144,
+    'narsap-sermia': 262,
+    'kangilernata-sermia': 177,
+    'dode-brae': 160, # proxy
+    'daugaard-jensen-gletsjer': 140,
+    'vestfjord-gletsjer': 154,
+    'sermeq-kullajeq': 169,
+    'bredegletsjer': 151,
+    'magga-dan-gletsjer': 156,
+    'graah-gletscher': 138,
+    'akullersuup-sermia': 270,
+    'eqip-sermia': 180,
+    'kista-dan-gletsjer': 158
+}
+discharge_data = pd.read_csv('/home/egp/repos/local/ice-discharge/dataverse_files/gate_D.csv', header = 0)
+discharge = {key: discharge_data[str(val)].iloc[2666:].mean() for key, val in discharge_gate.items()}
+
+
 def plot_field(grid, array, ax, norm = None, set_clim = None, cmap = 'viridis'):
     values = grid.map_mean_of_patch_nodes_to_patch(array)
 
@@ -100,7 +125,7 @@ def find_terminus(grid, bounds):
 # Plot individual catchments
 # for key, _ in bounds.items():
 #     # if regions[key] == 'CE':
-#     if key in ['charcot-gletscher', 'eielson-gletsjer', 'dode-brae', 'graah-gletscher']:
+#     if key == 'sermeq-avannarleq':
 
 #         with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
 #             grid = pickle.load(g)
@@ -113,7 +138,7 @@ def find_terminus(grid, bounds):
 #         hf = results['fields'][-1]['fringe_thickness'].value
 #         hd = results['fields'][-1]['dispersed_thickness'].value
 
-#         im = plot_field(grid, hf, ax, norm = LogNorm(vmin = 1e-3, vmax = 10))
+#         im = plot_field(grid, hd, ax, set_clim = {'vmax': np.percentile(hd, 95)})
 
 #         plt.colorbar(im)
 #         plt.title(f'{key.replace("-", " ").title()} fringe thickness (m)', fontsize = 18)
@@ -141,8 +166,11 @@ def find_terminus(grid, bounds):
 # plt.title('Kangertittivaq fringe thickness (m)', fontsize = 18)
 # plt.show()
 
-
 # Plot fluxes
+fluxes_df = pd.DataFrame(columns = ['glacier', 'ice_flux', 'fringe_flux', 'dispersed_flux', 'total_flux'])
+fluxes_df['glacier'] = regions.keys()
+fluxes_df['ice_flux'] = [discharge[key] for key in regions.keys()]
+
 for key, _ in regions.items():
 
         with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
@@ -161,11 +189,26 @@ for key, _ in regions.items():
         else:    
             terminus = find_terminus(grid, bounds[key])
 
-        # adj_nodes = np.unique(grid.adjacent_nodes_at_node[terminus == 1])
-        # adj_terminus = np.asarray([1 if i in adj_nodes else 0 for i in range(grid.number_of_nodes)])
-        # cross_terminus_links = np.where(
-        #     (terminus[grid.node_at_link_head] == 1) & (terminus[grid.node_at_link_tail] == 1), 1, 0
-        # )
+        adjacent_nodes = grid.adjacent_nodes_at_node[terminus == 1]
+        terminus_cells = np.unique(grid.cell_at_node[adjacent_nodes])
+        terminus_cells = terminus_cells[terminus_cells != -1]
+
+        mean_width = np.mean(grid.length_of_face[grid.faces_at_cell[terminus_cells]]) # TODO be more precise
+        velocity = np.abs(grid.at_node['sliding_velocity'])[grid.node_at_cell] * 31556926
+
+        for i in results['fields']:
+            hf = i['fringe_thickness'].value[grid.node_at_cell]
+            hf_flux = np.sum((hf * velocity * 0.65 * 2700 * mean_width)[terminus_cells])
+
+            hd = i['dispersed_thickness'].value[grid.node_at_cell]
+            hd_flux = np.sum((hd * velocity * 0.05 * 2700 * mean_width)[terminus_cells])
+
+            if i == results['fields'][-1]:
+                print(hd_flux)
+                print(hf_flux)
+                print(hd_flux + hf_flux)
+            
+        quit()
 
         terminus_links = grid.links_at_node[terminus == 1]
         flux_links = np.unique(terminus_links[terminus_links != -1])
@@ -187,6 +230,9 @@ for key, _ in regions.items():
             hd_flux = hd_links * link_velocity * 0.05 * 2700 * 31556926 * grid.length_of_face[grid.face_at_link[flux_links]]
             dfluxes.append(np.sum(hd_flux))
 
+        fluxes_df.loc[fluxes_df['glacier'] == key, 'fringe_flux'] = ffluxes[-1]
+        fluxes_df.loc[fluxes_df['glacier'] == key, 'dispersed_flux'] = dfluxes[-1]
+        fluxes_df.loc[fluxes_df['glacier'] == key, 'total_flux'] = ffluxes[-1] + dfluxes[-1]
 
         fig, ax = plt.subplots(figsize = (12, 6))
         time = np.array(results['time']) / 31556926
@@ -197,3 +243,12 @@ for key, _ in regions.items():
         plt.legend()
         plt.title(f'{key.replace("-", " ").title()} sediment load')
         plt.show()
+
+# fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)
+
+plt.scatter(fluxes_df['ice_flux'], fluxes_df['total_flux'])
+plt.xlabel('Ice flux (m$^3$ s$^{-1}$)')
+plt.ylabel('Sediment flux (kg a$^{-1}$)')
+plt.yscale('log')
+plt.xscale('log')
+plt.show()
