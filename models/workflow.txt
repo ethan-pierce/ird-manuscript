@@ -1,0 +1,3 @@
+poetry run python3 models/generate_grids.py
+poetry run python3 models/populate_fields.py
+poetry run python3 models/hydrology/steady_state.py
