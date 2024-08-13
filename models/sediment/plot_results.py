@@ -205,7 +205,8 @@ for key, _ in regions.items():
     cell_outflow_width = np.sum(face_width, axis = 1)
 
     velocity = np.abs(grid.at_node['sliding_velocity'])[grid.node_at_cell] * 31556926
-    terminus_velocity = velocity[terminus_cells]
+    surface_velocity = np.sqrt(grid.at_node['vx']**2 + grid.at_node['vy']**2)[grid.node_at_cell] * 31556926
+    terminus_velocity = surface_velocity[terminus_cells] # TODO surface vs. sliding velocity?
 
     ifluxes = []
     ffluxes = []
@@ -230,21 +231,21 @@ for key, _ in regions.items():
     fluxes_df.loc[fluxes_df['glacier'] == key, 'dispersed_flux'] = dfluxes[-1]
     fluxes_df.loc[fluxes_df['glacier'] == key, 'total_flux'] = ffluxes[-1] + dfluxes[-1]
 
-    # fig, ax = plt.subplots(figsize = (12, 6))
-    # time = np.array(results['time']) / 31556926
-    # plt.plot(time, ffluxes, label = 'Frozen fringe')
-    # plt.plot(time, dfluxes, label = 'Dispersed layer')
-    # plt.xlabel('Year of simulation')
-    # plt.ylabel('Sediment load (kg a$^{-1}$)')
-    # plt.legend()
-    # plt.title(f'{key.replace("-", " ").title()} sediment load')
-    # plt.show()
+    fig, ax = plt.subplots(figsize = (12, 6))
+    time = np.array(results['time']) / 31556926
+    plt.plot(time, ffluxes, label = 'Frozen fringe')
+    plt.plot(time, dfluxes, label = 'Dispersed layer')
+    plt.xlabel('Year of simulation')
+    plt.ylabel('Sediment load (kg a$^{-1}$)')
+    plt.legend()
+    plt.title(f'{key.replace("-", " ").title()} sediment load')
+    plt.show()
 
 # fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)
 
-plt.scatter(fluxes_df['ice_flux'], fluxes_df['total_flux'])
-plt.xlabel('Ice flux (m$^3$ s$^{-1}$)')
-plt.ylabel('Sediment flux (kg a$^{-1}$)')
-plt.yscale('log')
-plt.xscale('log')
-plt.show()
+# plt.scatter(fluxes_df['ice_flux'], fluxes_df['total_flux'])
+# plt.xlabel('Ice flux (m$^3$ s$^{-1}$)')
+# plt.ylabel('Sediment flux (kg a$^{-1}$)')
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.show()

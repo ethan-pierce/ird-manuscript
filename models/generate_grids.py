@@ -47,7 +47,7 @@ for key, val in mesh_params.items():
     with open('./models/inputs/catchments/' + file) as f:
         geoseries = gpd.read_file(f)
 
-    buffer = mesh_params[key]['buffer']
+    buffer = mesh_params[key]['buffer'] 
     smooth_polygon = (
         geoseries.loc[0, 'geometry'].buffer(buffer, join_style = 'round')
         .buffer(-2 * buffer, join_style = 'round')

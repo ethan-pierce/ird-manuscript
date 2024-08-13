@@ -42,7 +42,9 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    if (regions[key] == 'CE') & (key in CE_split_two):
+    if (regions[key] == 'SW') | (regions[key] == 'CW'):
+    # if (regions[key] == 'CE') & (key in CE_split_one):
+    # if (regions[key] == 'CE') & (key in CE_split_two):
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')
@@ -157,7 +159,10 @@ for key, tmg in landlab_grids.items():
         print(f'Estimated {timing} seconds per iteration.')
 
         for i in range(20):
-            fields = update(i * 1000, fields)
+            fields = update(1.0, fields)
+
+        for i in range(20):
+            fields = update((i + 1) * 1000, fields)
 
         dt = advector.calc_stable_time_step(0.6)
         results = {'time': [], 'fields': []}

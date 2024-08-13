@@ -15,13 +15,13 @@ from glacierbento.utils import freeze_grid
 from glacierbento.components import DistributedDrainageSystem, ShallowIceApproximation
 
 
-with open('./models/inputs/grids/initial-conditions.pickle', 'rb') as f:
+with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 failed = []
 
 for key, tmg in landlab_grids.items():
-    if True: # lazy but lets us keep the indentation level
+    if key == 'vestfjord-gletsjer': # lazy but lets us keep the indentation level
 
         glacier = key.replace('-', ' ').title()
         print(f'Running hydrology model for {glacier}...')
@@ -44,7 +44,7 @@ for key, tmg in landlab_grids.items():
         U_surface = jnp.asarray(np.sqrt(tmg.at_node['vx'][:]**2 + tmg.at_node['vy'][:]**2))
         U_sliding = jnp.where(U_surface > U_deformation, U_surface - U_deformation, 0.0)
         fields['sliding_velocity'] = Field(U_sliding, 'm/s', 'node')
-        tmg.add_field('sliding_velocity', U_sliding, at = 'node')
+        tmg.add_field('sliding_velocity', U_sliding, at = 'node', clobber = True)
 
         phi0 = jnp.asarray(
             model.params['ice_density'] 
@@ -148,9 +148,9 @@ for key, tmg in landlab_grids.items():
         # plt.show()
 
         effective_pressure = model.calc_effective_pressure(fields)
-        tmg.add_field('effective_pressure', effective_pressure, at = 'node')
-        tmg.add_field('hydraulic_potential', fields['potential'].value, at = 'node')
-        tmg.add_field('sheet_flow_height', fields['sheet_flow_height'].value, at = 'node')
+        tmg.add_field('effective_pressure', effective_pressure, at = 'node', clobber = True)
+        tmg.add_field('hydraulic_potential', fields['potential'].value, at = 'node', clobber = True)
+        tmg.add_field('sheet_flow_height', fields['sheet_flow_height'].value, at = 'node', clobber = True)
         landlab_grids[key] = tmg
 
         with open('./models/hydrology/outputs/' + key + '_history.pickle', 'wb') as f:
