@@ -120,7 +120,7 @@ for key, tmg in landlab_grids.items():
                 previous_dispersed - fields['basal_melt_rate'].value * dt,
                 dispersed_update['dispersed_thickness'].value
             )
-            updated_dispersed = jnp.where(updated_dispersed >= fringe.params['min_fringe'], updated_dispersed, fringe.params['min_fringe'])
+            # updated_dispersed = jnp.where(updated_dispersed >= fringe.params['min_fringe'], updated_dispersed, fringe.params['min_fringe'])
             fields = eqx.tree_at(lambda t: t['dispersed_thickness'].value, fields, updated_dispersed)
 
             advection = advector.run_one_step(dt, fields)
