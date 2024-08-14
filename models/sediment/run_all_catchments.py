@@ -42,10 +42,9 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    # if (regions[key] == 'SW') | (regions[key] == 'CW'):
+    if (regions[key] == 'SW') | (regions[key] == 'CW'):
     # if (regions[key] == 'CE') & (key in CE_split_one):
     # if (regions[key] == 'CE') & (key in CE_split_two):
-    if key in ['charcot-gletscher', 'graah-gletscher']:
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')
@@ -89,7 +88,7 @@ for key, tmg in landlab_grids.items():
 
         print('Model and fields initialized.')
 
-        print('Stable time step:', advector.calc_stable_time_step(0.1) / 60 / 60 / 24, ' days.')
+        print('Stable time step:', advector.calc_stable_time_step(0.6) / 60 / 60 / 24, ' days.')
 
         @eqx.filter_jit
         def update(dt, fields):
@@ -123,7 +122,6 @@ for key, tmg in landlab_grids.items():
                 previous_dispersed - fields['basal_melt_rate'].value * dt,
                 dispersed_update['dispersed_thickness'].value
             )
-            # updated_dispersed = jnp.where(updated_dispersed >= fringe.params['min_fringe'], updated_dispersed, fringe.params['min_fringe'])
             fields = eqx.tree_at(lambda t: t['dispersed_thickness'].value, fields, updated_dispersed)
 
             advection = advector.run_one_step(dt, fields)
@@ -186,7 +184,6 @@ for key, tmg in landlab_grids.items():
         tmg.add_field('fringe_thickness', fields['fringe_thickness'].value, at = 'node', clobber = True)
         tmg.add_field('dispersed_thickness', fields['dispersed_thickness'].value, at = 'node', clobber = True)
         tmg.add_field('till_thickness', fields['till_thickness'].value, at = 'node', clobber = True)
-        # landlab_grids[key] = tmg
 
         with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'wb') as f:
             pickle.dump(results, f)

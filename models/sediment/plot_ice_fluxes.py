@@ -59,6 +59,11 @@ for key, _ in regions.items():
     else:    
         terminus = find_terminus(grid, bounds[key])
 
+    plt.scatter(grid.node_x, grid.node_y, c = terminus)
+    plt.title(f'{key} terminus', fontsize = 18)
+    plt.show()
+    continue
+
     adjacent_nodes = grid.adjacent_nodes_at_node[terminus == 1]
     terminus_cells = np.unique(grid.cell_at_node[adjacent_nodes])
     terminus_cells = terminus_cells[terminus_cells != -1]
@@ -66,6 +71,8 @@ for key, _ in regions.items():
     outflow_faces = np.where(grid.status_at_link[grid.link_at_face[terminus_faces]] != 0, 1, 0)
     face_width = grid.length_of_face[terminus_faces] * outflow_faces
     cell_outflow_width = np.sum(face_width, axis = 1)
+    print(np.sum(cell_outflow_width))
+    continue
 
     velocity = np.abs(grid.at_node['sliding_velocity'])[grid.node_at_cell] * 31556926
     surface_velocity = np.sqrt(grid.at_node['vx']**2 + grid.at_node['vy']**2)[grid.node_at_cell] * 31556926

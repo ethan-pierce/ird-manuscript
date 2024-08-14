@@ -70,9 +70,7 @@ for key, val in mesh_params.items():
     grid = TriangleModelGrid(
         (nodes_y, nodes_x), 
         holes = holes, 
-        triangle_opts = triangle_opts,
-        # reorient_links = True,
-        # sorted = True
+        triangle_opts = triangle_opts
     )
     print('Mesh contains ' + str(grid.number_of_nodes) + ' nodes.')
     print('Maximum cell area is ' + str(np.max(grid.cell_area_at_node)) + ' m^2.')

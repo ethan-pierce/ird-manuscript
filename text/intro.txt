@@ -1,6 +1,4 @@
-Greenland’s outlet glaciers are powerful agents of erosion and sediment transport.
-[this is important for XYZ reasons]
+Between 2018 and 2022, we sampled sediment entrained in icebergs in three fjord systems: Nuup Kangerlua (southwest, near Nuuk), Ikerasak (central-west, near Disko Island), and Kangertittivaq (central-east, also known as Scoresbysund). In each fjord, we were able to visually identify toppled icebergs that had exposed debris-rich ice layers to the surface. These layers were very dark in color, offering a uniformly clean contact with the blue or white ice around them. Sediment appeared as individual particles, from fine sands (0.1 mm) through cobbles (200 mm), and as aggregate clusters of fine silts (< 0.05 mm). 
 
+We took samples by hand, used a freeze-dryer to sublimate away the ice, and calculate rafted sediment concentrations (RSC) as the ratio of sediment mass to total mass in each sample. While previous work has 
 
-
-In this Article, we show that IRD accounts for the missing 400 megatonnes per year of sediment transport from the Greenland ice sheet. 
