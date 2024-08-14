@@ -172,19 +172,14 @@ fluxes_df['glacier'] = regions.keys()
 fluxes_df['ice_flux'] = [discharge[key] for key in regions.keys()]
 
 for key, _ in regions.items():
+    if key not in ['eielson-gletsjer', 'dode-brae']:
+        pass
 
     with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
         grid = pickle.load(g)
 
     with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
         results = pickle.load(h)
-
-    fig, ax = plt.subplots()
-    im = plot_field(grid, results['fields'][-1]['fringe_thickness'].value, ax, norm = LogNorm(vmin = 1e-3, vmax = 10))
-    plt.title(f'{key.replace("-", " ").title()} fringe thickness (m)', fontsize = 18)
-    plt.colorbar(im)
-    plt.show()
-    continue
 
     advector = TVDAdvector(freeze_grid(grid), fields_to_advect = ['fringe_thickness', 'dispersed_thickness'])
     advector = advector.initialize(results['fields'][-1])

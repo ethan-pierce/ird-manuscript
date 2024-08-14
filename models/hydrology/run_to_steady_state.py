@@ -21,7 +21,7 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
 failed = []
 
 for key, tmg in landlab_grids.items():
-    if key == 'vestfjord-gletsjer': # lazy but lets us keep the indentation level
+    if key in ['charcot-gletscher', 'graah-gletscher']: # lazy but lets us keep the indentation level
 
         glacier = key.replace('-', ' ').title()
         print(f'Running hydrology model for {glacier}...')
@@ -129,7 +129,7 @@ for key, tmg in landlab_grids.items():
                 break
 
         print('Total simulation time: ' + f'{np.round(np.sum(dts) / 60 / 60 / 24, 2)}' + ' days.')
-
+        
         # plt.plot(np.cumsum(dts[1:]) / 60, max_diffs[1:])
         # plt.title('Max. change in sheet flow height (m)')
         # plt.xlabel('Simulation time (minutes)')

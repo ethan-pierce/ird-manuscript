@@ -47,13 +47,15 @@ for key, val in mesh_params.items():
     with open('./models/inputs/catchments/' + file) as f:
         geoseries = gpd.read_file(f)
 
-    buffer = mesh_params[key]['buffer'] 
+    buffer = mesh_params[key]['buffer']
+    tolerance = mesh_params[key]['tolerance']
+
     smooth_polygon = (
         geoseries.loc[0, 'geometry'].buffer(buffer, join_style = 'round')
         .buffer(-2 * buffer, join_style = 'round')
         .buffer(buffer, join_style = 'round')
     )
-    polygon = shapely.simplify(smooth_polygon, tolerance = mesh_params[key]['tolerance'])
+    polygon = shapely.simplify(smooth_polygon, tolerance = tolerance)
 
     if polygon.geom_type == 'MultiPolygon':
         polygon = polygon.geoms[0]
