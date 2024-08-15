@@ -37,7 +37,7 @@ regions = {
 bounds = {
     'rolige-brae': [6.0932e5, 6.3e5, -2.035e6, -2.03e6],
     'sermeq-avannarleq': [-2.063e5, -1.9985e5, -2.175e6, -2.1718e6],
-    'charcot-gletscher': [5.438e5, 5.453e5, -1.8834e6, -1.8814e6],
+    'charcot-gletscher': [5.35305e5, 5.36070e5, -1.88426e6, -1.88253e6],
     'sydbrae': [6.917e5, 6.966e5, -2.05300e6, -2.0503e6],
     'kangiata-nunaata-sermia': [-2.322e5, -2.2387e5, -2.82e6, -2.81829e6],
     'eielson-gletsjer': [[5.9641e5, 5.9806e5, -1.9938e6, -1.99205e6], [6.0543e5, 6.0975e5, -1.9721e6, -1.9696e6]],
@@ -45,15 +45,17 @@ bounds = {
     'kangilernata-sermia': [-2.0785e5, -2.0381e5, -2.19282e6, -2.18831e6],
     'dode-brae': [5.84982e5, 5.87e5, -2.057326e6, -2.0553e6],
     'daugaard-jensen-gletsjer': [5.5648e5, 5.6091e5, -1.89625e6, -1.8912e6],
-    'vestfjord-gletsjer': [5.8578e5, 5.8787e5, -2.06246e6, -2.06e6],
+    'vestfjord-gletsjer': [5.8578e5, 5.8787e5, -2.06246e6, -2.06e6], # TODO rerun
     'sermeq-kullajeq': [-1.99773e5, -1.98032e5, -2.18041e6, -2.17648e6],
     'bredegletsjer': [7.2777e5, 7.3120e5, -2.03134e6, -2.02869e6],
     'magga-dan-gletsjer': [6.65261e5, 6.6814e5, -2.08944e6, -2.08383e6],
-    'graah-gletscher': [5.4845e5, 5.50237e5, -1.877166e6, -1.87488e6],
+    'graah-gletscher': [5.4728e5, 5.4974e5, -1.875739e6, -1.873994e6],
     'akullersuup-sermia': [-2.29522e5, -2.2673e5, -2.816803e6, -2.81362e6],
     'eqip-sermia': [-2.04326e5, -2.0160e5, -2.204225e6, -2.20054e6],
     'kista-dan-gletsjer': [6.6050e5, 6.6336e5, -2.08995e6, -2.0887e6]
 }
+with open('models/inputs/bounds.pickle', 'wb') as f:
+    pickle.dump(bounds, f)
 
 discharge_gate = {
     'rolige-brae': 150,
@@ -172,8 +174,8 @@ fluxes_df['glacier'] = regions.keys()
 fluxes_df['ice_flux'] = [discharge[key] for key in regions.keys()]
 
 for key, _ in regions.items():
-    if key not in ['eielson-gletsjer', 'dode-brae']:
-        pass
+    if key != 'vestfjord-gletsjer':
+        continue   
 
     with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
         grid = pickle.load(g)

@@ -42,7 +42,7 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    if (regions[key] == 'SW') | (regions[key] == 'CW'):
+    # if (regions[key] == 'SW') | (regions[key] == 'CW'):
     # if (regions[key] == 'CE') & (key in CE_split_one):
     # if (regions[key] == 'CE') & (key in CE_split_two):
 
