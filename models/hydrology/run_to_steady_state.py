@@ -24,6 +24,8 @@ with open('./models/inputs/grids/initial-conditions.pickle', 'rb') as f:
 failed = []
 
 for key, tmg in initial_conditions.items():
+    if key != 'vestfjord-gletsjer':
+        continue
 
     glacier = key.replace('-', ' ').title()
     print(f'Running hydrology model for {glacier}...')

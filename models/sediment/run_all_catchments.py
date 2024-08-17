@@ -35,16 +35,21 @@ regions = {
     'eqip-sermia': 'CW',
     'kista-dan-gletsjer': 'CE'
 }
-CE_split_one = ['rolige-brae', 'charcot-gletscher', 'sydbrae', 'dode-brae', 'daugaard-jensen-gletsjer']
-CE_split_two = ['vestfjord-gletsjer', 'bredegletsjer', 'magga-dan-gletsjer', 'graah-gletscher', 'kista-dan-gletsjer']
+split_one = [
+    'rolige-brae', 'sermeq-avannarleq', 'charcot-gletscher', 'sydbrae', 'kangiata-nunaata-sermia', 
+    'eielson-gletsjer', 'narsap-sermia', 'kangilernata-sermia', 'dode-brae'
+]
+split_two = [
+    'daugaard-jensen-gletsjer', 'vestfjord-gletsjer', 'sermeq-kullajeq', 'bredegletsjer', 
+    'magga-dan-gletsjer', 'graah-gletscher', 'akullersuup-sermia', 'eqip-sermia', 'kista-dan-gletsjer'
+]
 
 with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    # if (regions[key] == 'SW') | (regions[key] == 'CW'):
-    # if (regions[key] == 'CE') & (key in CE_split_one):
-    # if (regions[key] == 'CE') & (key in CE_split_two):
+    if key in split_one:
+    # if key in split_two:
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')
@@ -53,7 +58,9 @@ for key, tmg in landlab_grids.items():
 
         eroder = SimpleGlacialEroder(grid)
         fringe = FrozenFringe(grid)
+        
         dispersed = DispersedLayer(grid)
+        dispersed.update_param('critical_depth', 100.0)
         advector = TVDAdvector(grid, fields_to_advect = ['fringe_thickness', 'dispersed_thickness'])
 
         surface_elevation = jnp.asarray(tmg.at_node['surface_elevation'][:])
@@ -86,10 +93,6 @@ for key, tmg in landlab_grids.items():
 
         advector = advector.initialize(fields)
 
-        print('Model and fields initialized.')
-
-        print('Stable time step:', advector.calc_stable_time_step(0.6) / 60 / 60 / 24, ' days.')
-
         @eqx.filter_jit
         def update(dt, fields):
 
@@ -103,7 +106,9 @@ for key, tmg in landlab_grids.items():
                 previous_fringe + fields['till_thickness'].value,
                 fringe_update['fringe_thickness'].value
             )
+            updated_fringe = jnp.where(updated_fringe >= jnp.percentile(updated_fringe, 99), jnp.percentile(updated_fringe, 99), updated_fringe)
             updated_fringe = jnp.where(updated_fringe >= fringe.params['min_fringe'], updated_fringe, fringe.params['min_fringe'])
+
             updated_till = fields['till_thickness'].value - (updated_fringe - previous_fringe)
             updated_till = jnp.where(updated_till >= 0, updated_till, 0.0)
             fields = eqx.tree_at(
@@ -122,6 +127,7 @@ for key, tmg in landlab_grids.items():
                 previous_dispersed - fields['basal_melt_rate'].value * dt,
                 dispersed_update['dispersed_thickness'].value
             )
+            updated_dispersed = jnp.where(updated_dispersed > jnp.percentile(updated_dispersed, 99), jnp.percentile(updated_dispersed, 99), updated_dispersed)
             fields = eqx.tree_at(lambda t: t['dispersed_thickness'].value, fields, updated_dispersed)
 
             advection = advector.run_one_step(dt, fields)
@@ -151,23 +157,30 @@ for key, tmg in landlab_grids.items():
 
             return fields
 
+        print('Model and fields initialized.')
+
+        for i in range(20):
+            fields = update(1.0, fields)
+
+        for i in range(20):
+            fields = update((i + 1) * 100, fields)
+
         import time
         start = time.time()
         fields = update(1.0, fields)
         timing = time.time() - start
         print(f'Estimated {timing} seconds per iteration.')
 
-        for i in range(20):
-            fields = update(1.0, fields)
+        CFL = 0.2
 
-        for i in range(20):
-            fields = update((i + 1) * 1000, fields)
+        print('Stable time step:', advector.calc_stable_time_step(CFL) / 60 / 60 / 24, ' days.')
 
-        dt = advector.calc_stable_time_step(0.6)
+        dt = advector.calc_stable_time_step(CFL)
         results = {'time': [], 'fields': []}
         total_time = 60 * 60 * 24 * 365 * 400
         nt = int(total_time / dt)
         print('Number of iterations:', nt)
+        print('Estimated time:', nt * timing / 60, 'minutes.')
 
         save_every = int(nt / 100)
 
