@@ -48,8 +48,8 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
     landlab_grids = pickle.load(f)
 
 for key, tmg in landlab_grids.items():
-    if key in split_one:
-    # if key in split_two:
+    # if key in split_one:
+    if key in split_two:
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')

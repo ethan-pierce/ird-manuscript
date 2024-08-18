@@ -183,8 +183,6 @@ fluxes_df['region'] = [regions[key] for key in regions.keys()]
 fluxes_df['ice_flux'] = [discharge[key] for key in regions.keys()]
 
 for key, _ in regions.items():
-    if key != 'sermeq-avannarleq':
-        continue
 
     with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
         grid = pickle.load(g)
@@ -192,7 +190,7 @@ for key, _ in regions.items():
     with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
         results = pickle.load(h)
 
-    # plot_triangle_mesh(grid, grid.at_node['dispersed_thickness'])
+    # plot_triangle_mesh(grid, grid.at_node['fringe_thickness'])
     # plt.show()
     # quit()
 
@@ -283,8 +281,8 @@ for key, _ in regions.items():
     time = np.array(results['time']) / 31556926
     fringe = np.array(ffluxes)
     dispersed = np.array(dfluxes)
-    plt.plot(time, fringe)
-    plt.plot(time, dispersed)
+    plt.plot(time, fringe / np.max(fringe))
+    plt.plot(time, dispersed / np.max(dispersed))
     plt.show()
 
 # fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)
