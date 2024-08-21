@@ -9,9 +9,14 @@ import matplotlib.pyplot as plt
 import matplotlib.colors
 import matplotlib.collections
 from matplotlib.colors import LogNorm, TwoSlopeNorm
+import cmcrameri.cm as cmc
+import seaborn as sns
 from landlab.plot import imshow_grid
 from glacierbento.utils import plot_triangle_mesh, plot_links, freeze_grid
 from glacierbento.components import TVDAdvector, SimpleGlacialEroder
+
+sns.set_theme(style = "white")
+plt.rcParams['axes.prop_cycle'] = plt.cycler(color = sns.color_palette('flare'))
 
 regions = {
     'rolige-brae': 'CE',
@@ -57,6 +62,17 @@ bounds = {
 with open('models/inputs/bounds.pickle', 'wb') as f:
     pickle.dump(bounds, f)
 
+grounding_lines = {
+    'x_gt': {
+        'charcot-gletscher': 5.345e5,
+        'eielson-gletsjer': 5.915e5,
+        'graah-gletscher': 5.465e5
+    },
+    'x_lt': {
+        'kangiata-nunaata-sermia': -2.241e5
+    }
+}
+
 discharge_gate = {
     'rolige-brae': 150,
     'sermeq-avannarleq': 167,
@@ -101,7 +117,7 @@ def plot_field(grid, array, ax, norm = None, set_clim = None, cmap = 'viridis'):
     if norm is None:
         norm = matplotlib.colors.Normalize(vmin = np.min(array), vmax = np.max(array))
 
-    collection = matplotlib.collections.PatchCollection(polys, cmap=cmap, norm=norm)
+    collection = matplotlib.collections.PatchCollection(polys, cmap=cmap, norm=norm, edgecolor='face')
     collection.set_array(values)
 
     if set_clim is not None:
@@ -124,53 +140,74 @@ def find_terminus(grid, bounds):
     )
     return terminus
 
-# Plot individual catchments
-# for key, _ in bounds.items():
-#     # if regions[key] == 'CE':
-#     if key == 'sermeq-avannarleq':
 
-#         with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
-#             grid = pickle.load(g)
+###########################
+# Plot effective pressure #
+###########################
+# region_names = {
+#     'CW': 'Ikerasak',
+#     'SW': 'Nuup Kangerlua',
+#     'CE': 'Kangertittivaq'
+# }
 
-#         with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
-#             results = pickle.load(h)
+# for region in ['CE', 'CW', 'SW']:
+#     fig, ax = plt.subplots(figsize = (12, 6))
 
-#         fig, ax = plt.subplots()
+#     for key, _ in bounds.items():
+#         if regions[key] == region:
 
-#         hf = results['fields'][-1]['fringe_thickness'].value
-#         hd = results['fields'][-1]['dispersed_thickness'].value
+#             with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
+#                 grid = pickle.load(g)
 
-#         im = plot_field(grid, hd, ax, set_clim = {'vmax': np.percentile(hd, 95)})
+#             N = grid.at_node['effective_pressure'][:]
 
-#         plt.colorbar(im)
-#         plt.title(f'{key.replace("-", " ").title()} fringe thickness (m)', fontsize = 18)
-#         plt.show()
+#             im = plot_field(grid, N, ax, cmap = cmc.batlow, norm = LogNorm(vmin = 1, vmax = 1e7))
 
-
-# Plot regions
-# fig, ax = plt.subplots()
-
-# for key, _ in bounds.items():
-#     if regions[key] == 'CE':
-
-#         with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
-#             grid = pickle.load(g)
-
-#         with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
-#             results = pickle.load(h)
-
-#         hf = results['fields'][-1]['fringe_thickness'].value
-#         hd = results['fields'][-1]['dispersed_thickness'].value
-
-#         im = plot_field(grid, hd, ax)
-
-# plt.colorbar(im)
-# plt.title('Kangertittivaq fringe thickness (m)', fontsize = 18)
-# plt.show()
-
+#     plt.colorbar(im)
+#     plt.title(f'{region_names[region]} effective pressure (Pa)', fontsize = 18)
+#     plt.savefig(f'figures/pressure/{region_names[region]}-effective_pressure.png', dpi = 300)
+#     plt.close()
 # quit()
 
-# Plot fluxes
+######################
+# Plot frozen fringe #
+######################
+region_names = {
+    'CW': 'Ikerasak',
+    'SW': 'Nuup Kangerlua',
+    'CE': 'Kangertittivaq'
+}
+
+for region in ['CE', 'CW', 'SW']:
+    fig, ax = plt.subplots(figsize = (12, 6))
+
+    for key, _ in bounds.items():
+        if regions[key] == region:
+
+            with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
+                grid = pickle.load(g)
+
+            with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
+                results = pickle.load(h)
+
+            hf = results['fields'][-1]['fringe_thickness'].value
+            fringe = np.where(hf > np.percentile(hf, 99), np.percentile(hf, 99), hf)
+
+            hd = results['fields'][-1]['dispersed_thickness'].value
+            dispersed = np.where(hd > np.percentile(hd, 99), np.percentile(hd, 99), hd)
+
+            im = plot_field(grid, dispersed, ax, cmap = cmc.batlow)
+            # Plot catchment boundary
+
+    plt.colorbar(im)
+    plt.title(f'{region_names[region]} dispersed thickness (m)', fontsize = 18)
+    plt.savefig(f'figures/dispersed/{region_names[region]}-dispersed-thickness.png', dpi = 300)
+    plt.close()
+quit()
+
+###############################
+# Plot fluxes and save to CSV #
+###############################
 fluxes_df = pd.DataFrame(columns = 
     [
         'glacier', 'region', 'ice_flux', 'model_ice_flux', 
@@ -182,6 +219,9 @@ fluxes_df['glacier'] = regions.keys()
 fluxes_df['region'] = [regions[key] for key in regions.keys()]
 fluxes_df['ice_flux'] = [discharge[key] for key in regions.keys()]
 
+times = {key: [] for key in regions.keys()}
+fluxes_over_time = {key: [] for key in regions.keys()}
+
 for key, _ in regions.items():
 
     with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
@@ -190,9 +230,23 @@ for key, _ in regions.items():
     with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
         results = pickle.load(h)
 
-    # plot_triangle_mesh(grid, grid.at_node['fringe_thickness'])
+    # fig, ax = plt.subplots(figsize = (12, 6))
+    fringe = results['fields'][-1]['fringe_thickness'].value
+    fringe_pct99 = np.percentile(fringe, 99.5)
+    # fringe = np.where(fringe > fringe_pct99, fringe_pct99, fringe)
+    # im = plot_field(grid, fringe, ax, cmap = cmc.batlow, norm = LogNorm())
+    # plt.colorbar(im)
+    # plt.title(f'{key.replace("-", " ").title()} fringe thickness (m)', fontsize = 18)
     # plt.show()
-    # quit()
+
+    # fig, ax = plt.subplots(figsize = (12, 6))
+    dispersed = results['fields'][-1]['dispersed_thickness'].value
+    disp_pct99 = np.percentile(dispersed, 99.5)
+    # dispersed = np.where(dispersed > disp_pct99, disp_pct99, dispersed)
+    # im = plot_field(grid, dispersed, ax, cmap = cmc.batlow, norm = LogNorm())
+    # plt.colorbar(im)
+    # plt.title(f'{key.replace("-", " ").title()} dispersed thickness (m)', fontsize = 18)
+    # plt.show()
 
     advector = TVDAdvector(freeze_grid(grid), fields_to_advect = ['fringe_thickness', 'dispersed_thickness'])
     advector = advector.initialize(results['fields'][-1])
@@ -224,12 +278,12 @@ for key, _ in regions.items():
         iflux = np.sum((hi * terminus_velocity * cell_outflow_width))
 
         fringe = i['fringe_thickness'].value[grid.node_at_cell]
-        fringe = np.where(fringe > np.percentile(fringe, 99), np.percentile(fringe, 99), fringe)
+        fringe = np.where(fringe > fringe_pct99, fringe_pct99, fringe)
         hf = fringe[terminus_cells]
         hf_flux = np.sum((hf * terminus_velocity * cell_outflow_width))
-
+        
         dispersed = i['dispersed_thickness'].value[grid.node_at_cell]
-        dispersed = np.where(dispersed > np.percentile(dispersed, 99), np.percentile(dispersed, 99), dispersed)
+        dispersed = np.where(dispersed > disp_pct99, disp_pct99, dispersed)
         hd = dispersed[terminus_cells]
         hd_flux = np.sum((hd * terminus_velocity * cell_outflow_width))
 
@@ -255,17 +309,16 @@ for key, _ in regions.items():
     fluxes_df.loc[fluxes_df['glacier'] == key, 'mean_pressure'] = np.mean(grid.at_node['effective_pressure'])
     fluxes_df.loc[fluxes_df['glacier'] == key, 'mean_terminus_pressure'] = np.mean(grid.at_node['effective_pressure'][grid.node_at_cell][terminus_cells])
     fluxes_df.loc[fluxes_df['glacier'] == key, 'mean_velocity'] = np.mean(velocity)
+    fluxes_df.loc[fluxes_df['glacier'] == key, 'max_velocity'] = np.max(velocity)
     fluxes_df.loc[fluxes_df['glacier'] == key, 'mean_terminus_velocity'] = np.mean(velocity[terminus_cells])
     fluxes_df.loc[fluxes_df['glacier'] == key, 'max_terminus_velocity'] = np.max(velocity[terminus_cells])
 
     fringe = grid.at_node['fringe_thickness'][grid.node_at_cell]
-    fringe = np.where(fringe > np.percentile(fringe, 99), np.percentile(fringe, 99), fringe)
     fringe_terminus = fringe[terminus_cells]
     fluxes_df.loc[fluxes_df['glacier'] == key, 'fringe_height_terminus'] = np.mean(fringe_terminus)
     fluxes_df.loc[fluxes_df['glacier'] == key, 'max_fringe_height_terminus'] = np.max(fringe_terminus)
 
     dispersed = grid.at_node['dispersed_thickness'][grid.node_at_cell]
-    dispersed = np.where(dispersed > np.percentile(dispersed, 99), np.percentile(dispersed, 99), dispersed)
     dispersed_terminus = dispersed[terminus_cells]
     fluxes_df.loc[fluxes_df['glacier'] == key, 'dispersed_height_terminus'] = np.mean(dispersed_terminus)
     fluxes_df.loc[fluxes_df['glacier'] == key, 'max_dispersed_height_terminus'] = np.max(dispersed_terminus)
@@ -277,12 +330,15 @@ for key, _ in regions.items():
 
     melt_per_yr = grid.at_node['basal_melt_rate'] * 31556926 * grid.cell_area_at_node
     fluxes_df.loc[fluxes_df['glacier'] == key, 'total_basal_melt'] = np.sum(melt_per_yr)
+    fluxes_df.loc[fluxes_df['glacier'] == key, 'max_basal_melt'] = np.max(melt_per_yr)
 
-    time = np.array(results['time']) / 31556926
-    fringe = np.array(ffluxes)
-    dispersed = np.array(dfluxes)
-    plt.plot(time, fringe / np.max(fringe))
-    plt.plot(time, dispersed / np.max(dispersed))
-    plt.show()
+    times[key] = np.array(results['time']) / 31556926
+    fluxes_over_time[key] = np.array(ffluxes)
 
-# fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)
+for key, val in times.items():
+    plt.plot(val / np.max(val), fluxes_over_time[key] / np.max(fluxes_over_time[key]))
+plt.xlabel('Normalized time')
+plt.ylabel('Normalized fringe flux')
+plt.show()
+
+fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)

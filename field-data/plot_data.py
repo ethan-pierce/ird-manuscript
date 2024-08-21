@@ -21,9 +21,6 @@ sco19['SSC_mass'] = ((sco19['Sed. G'] / sco19['Sample g']) * 100).astype('float6
 sco19 = sco19[['SSC_mass']]
 df_ce = pd.merge(sco18, sco19, how = 'outer')
 
-print(df_sw)
-quit()
-
 for df in [df_sw, df_cw, df_ce]:
     if df is df_sw:
         title = 'Nuup Kangerlua'

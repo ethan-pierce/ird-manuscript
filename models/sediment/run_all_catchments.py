@@ -49,7 +49,8 @@ with open('./models/hydrology/outputs/post-hydrology-grids.pickle', 'rb') as f:
 
 for key, tmg in landlab_grids.items():
     # if key in split_one:
-    if key in split_two:
+    # if key in split_two:
+    if key == 'dode-brae':
 
         glacier = key.replace('-', ' ').title()
         print(f'Running sediment transport model for {glacier}...')
@@ -106,7 +107,6 @@ for key, tmg in landlab_grids.items():
                 previous_fringe + fields['till_thickness'].value,
                 fringe_update['fringe_thickness'].value
             )
-            updated_fringe = jnp.where(updated_fringe >= jnp.percentile(updated_fringe, 99), jnp.percentile(updated_fringe, 99), updated_fringe)
             updated_fringe = jnp.where(updated_fringe >= fringe.params['min_fringe'], updated_fringe, fringe.params['min_fringe'])
 
             updated_till = fields['till_thickness'].value - (updated_fringe - previous_fringe)
@@ -127,7 +127,6 @@ for key, tmg in landlab_grids.items():
                 previous_dispersed - fields['basal_melt_rate'].value * dt,
                 dispersed_update['dispersed_thickness'].value
             )
-            updated_dispersed = jnp.where(updated_dispersed > jnp.percentile(updated_dispersed, 99), jnp.percentile(updated_dispersed, 99), updated_dispersed)
             fields = eqx.tree_at(lambda t: t['dispersed_thickness'].value, fields, updated_dispersed)
 
             advection = advector.run_one_step(dt, fields)
@@ -170,14 +169,19 @@ for key, tmg in landlab_grids.items():
         fields = update(1.0, fields)
         timing = time.time() - start
         print(f'Estimated {timing} seconds per iteration.')
-
+        
         CFL = 0.2
 
         print('Stable time step:', advector.calc_stable_time_step(CFL) / 60 / 60 / 24, ' days.')
 
+        if key == 'dode-brae':
+            n_years = 700
+        else:
+            n_years = 400
+
         dt = advector.calc_stable_time_step(CFL)
         results = {'time': [], 'fields': []}
-        total_time = 60 * 60 * 24 * 365 * 400
+        total_time = 60 * 60 * 24 * 365 * n_years
         nt = int(total_time / dt)
         print('Number of iterations:', nt)
         print('Estimated time:', nt * timing / 60, 'minutes.')
