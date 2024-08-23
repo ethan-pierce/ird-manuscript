@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="305.73129mm"
-   height="396.55713mm"
-   viewBox="0 0 305.73129 396.55713"
+   width="313.6459mm"
+   height="398.39105mm"
+   viewBox="0 0 313.6459 398.39105"
    version="1.1"
    id="svg5"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
@@ -30,21 +30,39 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="0.55752436"
-     inkscape:cx="577.55324"
-     inkscape:cy="807.13962"
+     inkscape:cx="579.34688"
+     inkscape:cy="590.10874"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <defs
      id="defs2" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="base"
+     transform="translate(0.39687574,0.36185504)">
+    <rect
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.79375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+       id="rect17370"
+       width="312.85214"
+       height="397.59729"
+       x="-32.016701"
+       y="-47.707653"
+       transform="translate(32.0167,47.742673)" />
+  </g>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(32.016701,47.707653)">
+     transform="translate(32.413576,48.10453)">
     <image
        width="301.4183"
        height="168.19865"
@@ -69,5 +87,41 @@
        id="image990"
        x="-32.016701"
        y="-47.707653" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:8.1953px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.204883"
+       x="-29.566242"
+       y="-36.666817"
+       id="text2564"
+       transform="scale(1.0040847,0.99593192)"><tspan
+         sodipodi:role="line"
+         id="tspan2562"
+         style="stroke-width:0.204883"
+         x="-29.566242"
+         y="-36.666817">(a)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:8.1953px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.204883"
+       x="264.32169"
+       y="-36.842133"
+       id="text2564-5"
+       transform="scale(1.0040847,0.99593192)"><tspan
+         sodipodi:role="line"
+         id="tspan2562-7"
+         style="stroke-width:0.204883"
+         x="264.32169"
+         y="-36.842133">(b)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:8.1953px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.204883"
+       x="-28.463373"
+       y="193.62759"
+       id="text2564-8"
+       transform="scale(1.0040847,0.99593192)"><tspan
+         sodipodi:role="line"
+         id="tspan2562-5"
+         style="stroke-width:0.204883"
+         x="-28.463373"
+         y="193.62759">(c)</tspan></text>
   </g>
 </svg>
