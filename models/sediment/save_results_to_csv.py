@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore", category = FutureWarning)
 
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 import pickle
 import shapely
 import matplotlib.pyplot as plt
@@ -190,18 +191,31 @@ for region in ['CE', 'CW', 'SW']:
             with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
                 results = pickle.load(h)
 
+            with open(f'./models/inputs/catchments/{key}.geojson', 'r') as f:
+                gdf = gpd.read_file(f)
+
             hf = results['fields'][-1]['fringe_thickness'].value
             fringe = np.where(hf > np.percentile(hf, 99), np.percentile(hf, 99), hf)
 
-            hd = results['fields'][-1]['dispersed_thickness'].value
-            dispersed = np.where(hd > np.percentile(hd, 99), np.percentile(hd, 99), hd)
+            im = plot_field(grid, fringe, ax, cmap = cmc.batlow, norm = LogNorm(vmin = 1e-3, vmax = 5))
+            gdf.boundary.plot(ax = ax, color = 'white', linewidth = 0.5)
 
-            im = plot_field(grid, dispersed, ax, cmap = cmc.batlow)
-            # Plot catchment boundary
+    if region == 'CE':
+        ax.plot([3e5, 4e5], [-2.15e6, -2.15e6], color = 'black', linewidth = 2)
+        ax.text(3.5e5, -2.14e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
+    elif region == 'CW':
+        ax.plot([1e5, 2e5], [-2.18e6, -2.18e6], color = 'black', linewidth = 2)
+        ax.text(1.5e5, -2.17e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
+    elif region == 'SW':
+        ax.plot([-2.5e5, -1.5e5], [-2.9e6, -2.9e6], color = 'black', linewidth = 2)
+        ax.text(-2e5, -2.89e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
 
+    plt.axis('off')
     plt.colorbar(im)
-    plt.title(f'{region_names[region]} dispersed thickness (m)', fontsize = 18)
-    plt.savefig(f'figures/dispersed/{region_names[region]}-dispersed-thickness.png', dpi = 300)
+    ax.set_xlabel('Grid x (m)')
+    ax.set_ylabel('Grid y (m)')
+    plt.title(f'{region_names[region]} fringe thickness (m)', fontsize = 18)
+    plt.savefig(f'figures/fringe/{region_names[region]}-fringe-thickness.png', dpi = 400)
     plt.close()
 quit()
 
@@ -335,10 +349,10 @@ for key, _ in regions.items():
     times[key] = np.array(results['time']) / 31556926
     fluxes_over_time[key] = np.array(ffluxes)
 
-for key, val in times.items():
-    plt.plot(val / np.max(val), fluxes_over_time[key] / np.max(fluxes_over_time[key]))
-plt.xlabel('Normalized time')
-plt.ylabel('Normalized fringe flux')
-plt.show()
+# for key, val in times.items():
+#     plt.plot(val / np.max(val), fluxes_over_time[key] / np.max(fluxes_over_time[key]))
+# plt.xlabel('Normalized time')
+# plt.ylabel('Normalized fringe flux')
+# plt.show()
 
 fluxes_df.to_csv('./models/sediment/outputs/fluxes.csv', index = False)
