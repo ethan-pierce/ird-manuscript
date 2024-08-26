@@ -12,6 +12,33 @@ from scipy.stats import linregress
 
 sns.set_theme(style="whitegrid")
 
+#########################
+# Continent-wide fluxes #
+#########################
+sns.set(font_scale = 1.25)
+Q = pd.DataFrame(columns = ['Source', 'Flux', 'Uncertainty'])
+Q['Source'] = ['Fjord accumulation', 'Suspended sediment', 'Ice-rafted debris']
+Q['Flux'] = [1.324, 0.892, 0.416]
+Q['Uncertainty'] = [0.79, 0.374, 0.254] # TODO check UQ
+
+fig, ax = plt.subplots(figsize = (6, 8))
+sns.barplot(data = Q, x = 'Source', y = 'Flux', errorbar = 'ci', palette = 'viridis', ax = ax, width = 0.5)
+
+for i in range(Q.shape[0]):
+    plt.scatter(i, Q['Flux'].iloc[i], color = 'black')
+    plt.plot([i, i], [Q['Flux'].iloc[i] - Q['Uncertainty'].iloc[i], Q['Flux'].iloc[i] + Q['Uncertainty'].iloc[i]], color = 'black')
+
+plt.xlabel('')
+ax.set_xticklabels(['Fjords', 'Plumes', 'Icebergs'])
+plt.ylabel('Flux (Gt a$^{-1}$)')
+plt.tight_layout()
+plt.savefig('figures/integrated-fluxes-barplot.png', dpi = 300)
+plt.show()
+quit()
+
+
+
+
 df = pd.read_csv('models/sediment/outputs/fluxes.csv')
 df['ice_flux'] = df['ice_flux'] * 1e12 * 917
 df['model_ice_flux'] = df['model_ice_flux'] * 917
@@ -22,8 +49,6 @@ df['model_ice_yield'] = df['model_ice_flux'] / df['catchment_area']
 df['fringe_load'] = df['fringe_flux'] * 0.65 * 2700
 df['dispersed_load'] = df['dispersed_flux'] * 0.05 * 2700
 df['total_load'] = df['fringe_load'] + df['dispersed_load']
-print(df.groupby('region')['total_load'].sum())
-quit()
 
 df['sediment_yield'] = df['total_load'] / df['catchment_area']
 
@@ -50,6 +75,7 @@ second_fit = linregress(df2['log_ice_yield'], df2['log_sed_yield'])
 df3 = df[(df['log_sed_yield'] > -1) & (df['log_ice_yield'] > 1)]
 third_fit = linregress(df3['log_ice_yield'], df3['log_sed_yield'])
 fit = third_fit
+print(fit)
 
 #############
 # Upscaling #
@@ -60,6 +86,7 @@ discharge = pd.read_csv('models/inputs/gate_D.csv', header = 0)
 areas = gpd.read_file('models/inputs/catchment-area-at-gate.geojson')
 areas['Area'] = areas['rast_val']
 areas['Gate'] = areas['pnt_val']
+print(areas.head)
 
 GrISdf = pd.DataFrame(columns = ['Gate', 'Area', 'Ice Discharge', 'Ice Yield', 'Sediment Yield', 'Sediment Flux'])
 GrISdf['Gate'] = areas['Gate']
@@ -78,6 +105,20 @@ print('Total discharge: ', np.round(GrISdf['Sediment Flux'].sum() * 1e-9, 2), 'M
 
 GrISdf['Ice-rafted sediment flux'] = GrISdf['Sediment Flux'] * 1e-9
 GrISdf.to_csv('models/sediment/outputs/GrIS-fluxes.csv')
+
+
+import statsmodels.api as sm
+lr = sm.OLS(df3['log_sed_yield'], sm.add_constant(df3['log_ice_yield'])).fit()
+ci = lr.conf_int(alpha = 0.6)
+print(lr.summary())
+print(ci)
+
+lower = np.sum(10**(ci[0][1] * np.log10(GrISdf['Ice Yield']) + ci[0][0]) * GrISdf['Area']) * 1e-9
+upper = np.sum(10**(ci[1][1] * np.log10(GrISdf['Ice Yield']) + ci[1][0]) * GrISdf['Area']) * 1e-9
+mean = np.sum(10**(lr.params['log_ice_yield'] * np.log10(GrISdf['Ice Yield']) + lr.params['const']) * GrISdf['Area']) * 1e-9
+
+print(lower, mean, upper)
+
 
 quit()
 
