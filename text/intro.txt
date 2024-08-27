@@ -1,11 +1,15 @@
 In Greenland’s fjords, we often find icebergs with striking layers of blackened, sediment-rich ice, up to several meters thick. Originating far inland, at the base of the ice sheet, this ice-rafted debris (IRD) is a key source of sediment to the coastal ocean. In the wake of large icebergs, where IRD rains out into the water column, we see heightened chlorophyll levels as primary producers harness nutrients from the sediment. In marine sediment cores, the presence and character of IRD deposits help us build inferences about the behavior of large ice sheets in the paleo-record. Even within the grounding zone, sediment deposits from IRD help build shoals, inhibiting ice discharge and buffering tidewater glacier retreat. Despite its importance to downstream marine processes, IRD is one of the least well-constrained components of Greenland’s sediment budget.
 
-Greenland’s fjords are the primary sink for sediment sourced from beneath the ice sheet. A recent study of fjord accumulation rates showed that Greenland’s fjords receive 1.324 +/- 0.79 Gt of sediment per year. Of that, suspended sediment in fluvial discharge likely accounts for 0.892 +/- 0.374 Gt per year, based on a scaling relationship derived from remote sensing and field measurements. 
-
-[TODO after sed. flux scaling - make an implicit case here]
+Greenland’s fjords are the primary sink for sediment sourced from beneath the ice sheet. A recent study of fjord accumulation rates showed that Greenland’s fjords receive 1.324 +/- 0.79 Gt of sediment per year. Of that, suspended sediment in fluvial discharge likely accounts for 0.892 +/- 0.374 Gt per year, based on a scaling relationship derived from remote sensing and field measurements. This leaves approximately 430 megatonnes per year of sediment transport unaccounted for. Wind-blown debris contributes some of this material, but englacial sediment concentrations are less than 0.1%, which is a sediment flux of
 
 Previous work has assumed all of Greenland’s outlet glaciers have a debris-rich basal ice layer with uniform thickness and sediment concentration. This is supported by observations from a few individual icebergs and tidewater glacier margins. When applied to the entire ice sheet, however, this approach suggests that Greenland’s icebergs carry 2.88 Gt/a of sediment. Not only is this estimate more than double the total accumulation rates in fjords, it would comprise nearly 20% of the total sediment flux from all rivers on Earth. 
 
+
+
+
+However, comparing our best estimates of fjord accumulation rates and fluvial sediment fluxes leaves us with approximately 430 megatonnes per year of “missing” transport.
+
+While other processes deliver sediment to fjords, including mass wasting from hillslopes, aeolian transport, and deformation of subglacial tills, 
 
 However, we have observations from glacial margins that tell a much more complex, varied story about the basal ice layer.
 
@@ -14,6 +18,6 @@ However, we have observations from glacial margins that tell a much more complex
 
 
 
-In this Article, we quantify the sediment load carried by icebergs to Greenland’s coastal waters. First, we compile new and existing observations of ice-rafted debris entrained in icebergs in three prominent fjord systems. Inspired by these observations, we implement a numerical model of subglacial erosion, sediment entrainment, and advection. Our model predicts sediment fluxes at the terminus of an outlet glacier, representing the total source of sediment entering the fjord from solid ice discharge. From these results, we identify a scaling relationship between a glacier’s dynamical behavior and its basal sediment load. By extrapolating across the rest of the ice sheet, we estimate Greenland’s icebergs deliver X Gt per year of sediment to its fjords. 
+In this Article, we quantify the sediment load carried by icebergs to Greenland’s coastal waters. First, we compile new and existing observations of ice-rafted debris entrained in icebergs in three prominent fjord systems. Inspired by these observations, we implement a numerical model of subglacial erosion, sediment entrainment, and advection. Our model predicts sediment fluxes at the terminus of an outlet glacier, representing the total source of sediment entering the fjord from solid ice discharge. From these results, we identify a scaling relationship between a glacier’s dynamical behavior and its basal sediment load. By extrapolating across the rest of the ice sheet, we estimate Greenland’s icebergs deliver 0.416 Gt per year of sediment to its fjords. 
 
 

@@ -11,30 +11,33 @@ from scipy.optimize import curve_fit
 from scipy.stats import linregress
 
 sns.set_theme(style="whitegrid")
+sns.set(font_scale = 1.5)
 
 #########################
 # Continent-wide fluxes #
 #########################
-sns.set(font_scale = 1.25)
-Q = pd.DataFrame(columns = ['Source', 'Flux', 'Uncertainty'])
-Q['Source'] = ['Fjord accumulation', 'Suspended sediment', 'Ice-rafted debris']
-Q['Flux'] = [1.324, 0.892, 0.416]
-Q['Uncertainty'] = [0.79, 0.374, 0.254] # TODO check UQ
+# Q = pd.DataFrame(columns = ['Source', 'Flux', 'Uncertainty'])
+# Q['Source'] = ['Fjord accumulation', 'Suspended sediment', 'Ice-rafted debris']
+# Q['Flux'] = [1.324, 0.892, 0.416]
+# Q['Uncertainty'] = [0.79, 0.374, 0.106]
 
-fig, ax = plt.subplots(figsize = (6, 8))
-sns.barplot(data = Q, x = 'Source', y = 'Flux', errorbar = 'ci', palette = 'viridis', ax = ax, width = 0.5)
+# fig, ax = plt.subplots(figsize = (6, 8))
+# sns.barplot(data = Q, x = 'Source', y = 'Flux', errorbar = 'ci', palette = 'viridis', ax = ax, width = 0.5)
 
-for i in range(Q.shape[0]):
-    plt.scatter(i, Q['Flux'].iloc[i], color = 'black')
-    plt.plot([i, i], [Q['Flux'].iloc[i] - Q['Uncertainty'].iloc[i], Q['Flux'].iloc[i] + Q['Uncertainty'].iloc[i]], color = 'black')
+# for i in range(Q.shape[0] - 1):
+#     plt.scatter(i, Q['Flux'].iloc[i], color = 'black')
+#     plt.plot([i, i], [Q['Flux'].iloc[i] - Q['Uncertainty'].iloc[i], Q['Flux'].iloc[i] + Q['Uncertainty'].iloc[i]], color = 'black')
 
-plt.xlabel('')
-ax.set_xticklabels(['Fjords', 'Plumes', 'Icebergs'])
-plt.ylabel('Flux (Gt a$^{-1}$)')
-plt.tight_layout()
-plt.savefig('figures/integrated-fluxes-barplot.png', dpi = 300)
-plt.show()
-quit()
+# plt.scatter(2, Q['Flux'].iloc[2], color = 'black')
+# plt.plot([2, 2], [0.303, 1.087], color = 'black')
+
+# plt.xlabel('')
+# ax.set_xticklabels(['Fjords', 'Plumes', 'Icebergs'])
+# plt.ylabel('Flux (Gt a$^{-1}$)')
+# plt.tight_layout()
+# plt.savefig('figures/integrated-fluxes-barplot.png', dpi = 300)
+# plt.show()
+# quit()
 
 
 
@@ -106,117 +109,124 @@ print('Total discharge: ', np.round(GrISdf['Sediment Flux'].sum() * 1e-9, 2), 'M
 GrISdf['Ice-rafted sediment flux'] = GrISdf['Sediment Flux'] * 1e-9
 GrISdf.to_csv('models/sediment/outputs/GrIS-fluxes.csv')
 
-
 import statsmodels.api as sm
-lr = sm.OLS(df3['log_sed_yield'], sm.add_constant(df3['log_ice_yield'])).fit()
-ci = lr.conf_int(alpha = 0.6)
-print(lr.summary())
-print(ci)
+model = sm.genmod.GLM(df3['log_sed_yield'], sm.add_constant(df3['log_ice_yield']), family = sm.families.Gaussian()).fit()
+ci = model.conf_int(alpha = 0.05)
+print(model.summary())
 
-lower = np.sum(10**(ci[0][1] * np.log10(GrISdf['Ice Yield']) + ci[0][0]) * GrISdf['Area']) * 1e-9
-upper = np.sum(10**(ci[1][1] * np.log10(GrISdf['Ice Yield']) + ci[1][0]) * GrISdf['Area']) * 1e-9
-mean = np.sum(10**(lr.params['log_ice_yield'] * np.log10(GrISdf['Ice Yield']) + lr.params['const']) * GrISdf['Area']) * 1e-9
+def sum_flux(samples):
+    model = sm.genmod.GLM(samples['log_sed_yield'], sm.add_constant(samples['log_ice_yield']), family = sm.families.Gaussian()).fit()
+    mean = np.sum(10**(model.params['log_ice_yield'] * np.log10(GrISdf['Ice Yield']) + model.params['const']) * GrISdf['Area']) * 1e-9
+    return mean
 
-print(lower, mean, upper)
+# n = 5000
+# distribution = np.empty(n)
+# for i in range(n):
+#     samples = df3.sample(frac = 1, replace = True)
+#     distribution[i] = sum_flux(samples)
 
+# plt.hist(distribution, bins = 50)
+# plt.show()
 
-quit()
-
-# df['Group'] = 0
-# for idx, row in df.iterrows():
-#     if row['log_ice_yield'] < 1:
-#         df.at[idx, 'Group'] = 2
-#     elif row['log_sed_yield'] < -1:
-#         df.at[idx, 'Group'] = 1
-#     else:
-#         df.at[idx, 'Group'] = 0
-
-# df['Region'] = df['region'].replace({
-#     'SW': 'Nuup Kangerlua',
-#     'CW': 'Ikerasak',
-#     'CE': 'Kangertittivaq'
-# })
-
-# fig, ax = plt.subplots(figsize = (12, 6))
-
-# sns.scatterplot(
-#     ax = ax, data = df[df['log_ice_yield'] > 1], x = 'log_ice_yield', y = 'log_sed_yield', 
-#     style = 'Group', hue = 'Region', s = 100,
-#     palette = sns.color_palette(['blue', 'magenta', 'red'])
-# )
-# sns.regplot(
-#     ax = ax, data = df3, x = 'log_ice_yield', y = 'log_sed_yield',
-#     color = 'black', line_kws = {'linestyle': ':', 'linewidth': 2}, scatter = False
-# )
-
-# label = 'log(sediment yield) = {:.2f}log(ice yield) + {:.2f}'.format(third_fit.slope, third_fit.intercept)
-# ax.text(1.5, 0.75, label, fontsize = 12)
-# ax.text(1.5, 0.5, 'R$^2$ = {:.2f}'.format(third_fit.rvalue ** 2), fontsize = 12)
-
-# h,l = ax.get_legend_handles_labels()
-# l[4] = 'Category'
-# l[5] = 'Fringe reaches terminus'
-# l[6] = 'Upstream deposition only'
-# ax.legend(h[:7], l[:7])
-
-# ax.set_xlabel('Log$_{10}$(Ice yield) (kg m$^{-2}$ a$^{-1}$)')
-# ax.set_ylabel('Log$_{10}$(Sediment yield) (kg m$^{-2}$ a$^{-1}$)')
-
-# plt.tight_layout()
-# plt.savefig('figures/ice-vs-sed-yield.png', dpi = 300)
+# print(np.percentile(distribution, 2.5), np.percentile(distribution, 50), np.percentile(distribution, 97.5))
 # quit()
+
+
+
+df['Group'] = 0
+for idx, row in df.iterrows():
+    if row['log_ice_yield'] < 1:
+        df.at[idx, 'Group'] = 2
+    elif row['log_sed_yield'] < -1:
+        df.at[idx, 'Group'] = 1
+    else:
+        df.at[idx, 'Group'] = 0
+
+df['Region'] = df['region'].replace({
+    'SW': 'Nuup Kangerlua',
+    'CW': 'Ikerasak',
+    'CE': 'Kangertittivaq'
+})
+
+fig, ax = plt.subplots(figsize = (12, 6))
+
+sns.scatterplot(
+    ax = ax, data = df[df['log_ice_yield'] > 1], x = 'log_ice_yield', y = 'log_sed_yield', 
+    style = 'Group', hue = 'Region', s = 100,
+    palette = sns.color_palette(['blue', 'magenta', 'red'])
+)
+sns.regplot(
+    ax = ax, data = df3, x = 'log_ice_yield', y = 'log_sed_yield',
+    color = 'black', line_kws = {'linestyle': ':', 'linewidth': 2}, scatter = False
+)
+
+label = 'log(sediment yield) = {:.2f}log(ice yield) + {:.2f}'.format(third_fit.slope, third_fit.intercept)
+ax.text(1.5, 0.75, label, fontsize = 12)
+ax.text(1.5, 0.5, 'R$^2$ = {:.2f}'.format(third_fit.rvalue ** 2), fontsize = 12)
+
+h,l = ax.get_legend_handles_labels()
+l[4] = 'Category'
+l[5] = 'Fringe reaches terminus'
+l[6] = 'Upstream deposition only'
+ax.legend(h[:7], l[:7])
+
+ax.set_xlabel('Log$_{10}$(Ice yield) (kg m$^{-2}$ a$^{-1}$)')
+ax.set_ylabel('Log$_{10}$(Sediment yield) (kg m$^{-2}$ a$^{-1}$)')
+
+plt.tight_layout()
+plt.savefig('figures/ice-vs-sed-yield.png', dpi = 300)
 
 #########################
 # Total sediment fluxes #
 #########################
-# sns.set(font_scale = 1.25)
+sns.set(font_scale = 1.5)
 
-# df['log_fringe_flux'] = np.log10(df['fringe_flux'])
-# df['log_dispersed_flux'] = np.log10(df['dispersed_flux'])
-# df['log_total_flux'] = np.log10(df['fringe_flux'] + df['dispersed_flux'])
-# df['total_flux'] = df['fringe_flux'] + df['dispersed_flux']
-# df = df.sort_values('total_flux', ascending = False)
+df['log_fringe_flux'] = np.log10(df['fringe_flux'])
+df['log_dispersed_flux'] = np.log10(df['dispersed_flux'])
+df['log_total_flux'] = np.log10(df['fringe_flux'] + df['dispersed_flux'])
+df['total_flux'] = df['fringe_flux'] + df['dispersed_flux']
+df = df.sort_values('total_flux', ascending = False)
 
-# df['Glacier'] = [i.replace('-', ' ').title() for i in df['glacier']]
+df['Glacier'] = [i.replace('-', ' ').title() for i in df['glacier']]
 
-# fig, ax = plt.subplots(figsize = (10, 14))
+fig, ax = plt.subplots(figsize = (10, 14))
 
-# sns.set_color_codes('pastel')
-# sns.barplot(
-#     ax = ax, data = df, x = 'total_flux', y = 'Glacier', 
-#     label = 'Dispersed load', color = 'lightcoral', width = 0.8
-# )
-# sns.set_color_codes('muted')
-# sns.barplot(
-#     ax = ax, data = df, x = 'fringe_flux', y = 'Glacier', 
-#     label = 'Fringe load', color = 'darkred', width = 0.8
-# )
+sns.set_color_codes('pastel')
+sns.barplot(
+    ax = ax, data = df, x = 'total_flux', y = 'Glacier', 
+    label = 'Dispersed load', color = 'lightcoral', width = 0.8
+)
+sns.set_color_codes('muted')
+sns.barplot(
+    ax = ax, data = df, x = 'fringe_flux', y = 'Glacier', 
+    label = 'Fringe load', color = 'darkred', width = 0.8
+)
 
-# sns.despine(left = True, bottom = True)
-# ax.set_xlabel('Sediment flux (m$^3$ a$^{-1}$)')
-# ax.set_ylabel('')
-# ax.legend(ncol = 2, loc = 'lower right')
+sns.despine(left = True, bottom = True)
+ax.set_xlabel('Sediment flux (m$^3$ a$^{-1}$)')
+ax.set_ylabel('')
+ax.legend(ncol = 2, loc = 'lower right')
 
-# plt.tight_layout()
-# plt.savefig('figures/total-sediment-fluxes.png', dpi = 300)
+plt.tight_layout()
+plt.savefig('figures/total-sediment-fluxes.png', dpi = 300)
 
-# fig, ax = plt.subplots(figsize = (10, 14))
-# sns.set_color_codes('pastel')
-# sns.barplot(
-#     ax = ax, data = df, x = 'specific_erosion', y = 'Glacier', 
-#     label = 'Erosion', color = 'lightblue'
-# )
-# sns.set_color_codes('muted')
-# sns.barplot(
-#     ax = ax, data = df, x = 'specific_sed_yield', y = 'Glacier', 
-#     label = 'Transport', color = 'darkblue'
-# )
-# sns.despine(left = True, bottom = True)
-# ax.set_xlabel('Catchment-averaged rate (mm a$^{-1}$)')
-# ax.set_ylabel('')
-# ax.legend(ncol = 2, loc = 'lower right')
-# plt.tight_layout()
-# plt.savefig('figures/specific-yield.png', dpi = 300)
+fig, ax = plt.subplots(figsize = (10, 14))
+sns.set_color_codes('pastel')
+sns.barplot(
+    ax = ax, data = df, x = 'specific_erosion', y = 'Glacier', 
+    label = 'Erosion', color = 'lightblue'
+)
+sns.set_color_codes('muted')
+sns.barplot(
+    ax = ax, data = df, x = 'specific_sed_yield', y = 'Glacier', 
+    label = 'Transport', color = 'darkblue'
+)
+sns.despine(left = True, bottom = True)
+ax.set_xlabel('Catchment-averaged rate (mm a$^{-1}$)')
+ax.set_ylabel('')
+ax.legend(ncol = 2, loc = 'lower right')
+plt.tight_layout()
+plt.savefig('figures/specific-yield.png', dpi = 300)
 
 #####################
 # Linear regression #
