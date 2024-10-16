@@ -2,3 +2,5 @@ models/inputs/*.nc
 models/inputs/grids
 models/hydrology/outputs
 models/sediment/outputs
+drafts/
+figures/*/*.svg

@@ -170,6 +170,55 @@ def find_terminus(grid, bounds):
 #     plt.close()
 # quit()
 
+########################
+# Plot dispersed layer #
+########################
+region_names = {
+    'CW': 'Ikerasak',
+    'SW': 'Nuup Kangerlua',
+    'CE': 'Kangertittivaq'
+}
+
+for region in ['CE', 'CW', 'SW']:
+    fig, ax = plt.subplots(figsize = (12, 6))
+
+    for key, _ in bounds.items():
+        if regions[key] == region:
+
+            with open(f'./models/sediment/outputs/grids/{key}-grid.pickle', 'rb') as g:
+                grid = pickle.load(g)
+
+            with open(f'./models/sediment/outputs/history/{key}-history.pickle', 'rb') as h:
+                results = pickle.load(h)
+
+            with open(f'./models/inputs/catchments/{key}.geojson', 'r') as f:
+                gdf = gpd.read_file(f)
+
+            hd = results['fields'][-1]['dispersed_thickness'].value
+            disp = np.where(hd > np.percentile(hd, 99), np.percentile(hd, 99), hd)
+
+            im = plot_field(grid, disp, ax, cmap = cmc.lipari, norm = LogNorm(vmin = 1e-2, vmax = 5))
+            gdf.boundary.plot(ax = ax, color = 'white', linewidth = 0.5)
+
+    if region == 'CE':
+        ax.plot([3e5, 4e5], [-2.15e6, -2.15e6], color = 'black', linewidth = 2)
+        ax.text(3.5e5, -2.14e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
+    elif region == 'CW':
+        ax.plot([1e5, 2e5], [-2.18e6, -2.18e6], color = 'black', linewidth = 2)
+        ax.text(1.5e5, -2.17e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
+    elif region == 'SW':
+        ax.plot([-2.5e5, -1.5e5], [-2.9e6, -2.9e6], color = 'black', linewidth = 2)
+        ax.text(-2e5, -2.89e6, '100 km', fontsize = 12, ha = 'center', va = 'center', color = 'black')
+
+    plt.axis('off')
+    plt.colorbar(im)
+    ax.set_xlabel('Grid x (m)')
+    ax.set_ylabel('Grid y (m)')
+    plt.title(f'{region_names[region]} dispersed layer thickness (m)', fontsize = 18)
+    plt.savefig(f'figures/dispersed/{region_names[region]}-dispersed-thickness.png', dpi = 600)
+    plt.close()
+quit()
+
 ######################
 # Plot frozen fringe #
 ######################

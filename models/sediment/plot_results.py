@@ -160,9 +160,10 @@ sns.regplot(
     color = 'black', line_kws = {'linestyle': ':', 'linewidth': 2}, scatter = False
 )
 
-label = 'log(sediment yield) = {:.2f}log(ice yield) + {:.2f}'.format(third_fit.slope, third_fit.intercept)
-ax.text(1.5, 0.75, label, fontsize = 12)
-ax.text(1.5, 0.5, 'R$^2$ = {:.2f}'.format(third_fit.rvalue ** 2), fontsize = 12)
+# label = 'log($SY$) = {:.2f}log($IY$) + {:.2f}'.format(third_fit.slope, third_fit.intercept)
+label = 'SY = 0.019 IY$^{0.76}$'
+ax.text(1.5, 0.75, label, fontsize = 16)
+ax.text(1.5, 0.5, 'R$^2$ = {:.2f}'.format(third_fit.rvalue ** 2), fontsize = 16)
 
 h,l = ax.get_legend_handles_labels()
 l[4] = 'Category'
