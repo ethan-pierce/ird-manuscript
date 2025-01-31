@@ -4,3 +4,6 @@ models/hydrology/outputs
 models/sediment/outputs
 drafts/
 figures/*/*.svg
+figures/inkscape/
+figures/partial
+text/

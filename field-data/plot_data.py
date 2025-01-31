@@ -8,36 +8,52 @@ sns.set_theme(style = 'ticks')
 
 cut = 0.1
 
-df_sw = pd.read_csv('field-data/NuupKangerlua_ssc_results.csv')
-print(len(df_sw['Name'].unique()))
+df_sw = pd.read_csv('field-data/NuupKangerlua_ssc_results.csv', sep = ',')
+# print(len(df_sw['Name'].unique()))
+print(df_sw.shape[0])
 df_sw = df_sw[df_sw['SSC_mass'] > cut]
 df_sw['Region'] = 'Nuup Kangerlua'
 
-df_cw = pd.read_csv('field-data/SAMPLEWEIGHTS_EQ22icebergsamples.csv', header = 5, names = ['Sample', 'GRL', 'Field weight', 'Lab weight', '% loss', 'Tape weight', 'Empty weight', 'Sed. weight', 'SSC_mass'])
-print(df_cw.shape[0]/3)
+df_cw = pd.read_csv(
+    'field-data/SAMPLEWEIGHTS_EQ22icebergsamples.csv', 
+    header = 5, 
+    names = ['Sample', 'GRL', 'Field weight', 'Lab weight', '% loss', 'Tape weight', 'Empty weight', 'Sed. weight', 'SSC_mass'],
+    sep = '\s+'
+)
+print(df_cw.shape[0])
 df_cw = df_cw[(df_cw['SSC_mass'] > 0) & (df_cw['SSC_mass'] != 1.0)]
 df_cw['SSC_mass'] = df_cw['SSC_mass'] * 100
 df_cw = df_cw[df_cw['SSC_mass'] > cut]
 df_cw['Region'] = 'Ikerasak'
 
-sco18 = pd.read_csv('field-data/East_Greenland_2018_ssc.csv', nrows = 26)
-print(len(sco18['Isbj.nr.'].unique()))
-sco18.loc['sd W%', 27] = 40
-sco18['SSC_mass'] = sco18['sd W%'].astype('float64')
-sco18 = sco18[['SSC_mass']]
-sco19 = pd.read_csv('field-data/East_Greenland_2019_ssc.csv', nrows = 76)
-print(sco19.shape[0]/3)
-sco19['SSC_mass'] = ((sco19['Sed. G'] / sco19['Sample g']) * 100).astype('float64')
-sco19 = sco19[['SSC_mass']]
-df_ce = pd.merge(sco18, sco19, how = 'outer')
-df_ce = df_ce[df_ce['SSC_mass'] > cut]
+sco18 = pd.read_csv('field-data/Kangertittivaq2018.csv')
+sco18['SSC_mass'] = sco18['RSC'] * 100
+sco18 = sco18[sco18['SSC_mass'] > cut][['SSC_mass']]
+df_ce = sco18
 df_ce['Region'] = 'Kangertittivaq'
+print(df_ce.shape[0])
+
+# print(len(sco18['Isbj.nr.'].unique()))
+# sco18.loc['sd W%', 27] = 40
+# sco18['SSC_mass'] = sco18['sd W%'].astype('float64')
+# sco18 = sco18[['SSC_mass']]
+# sco19 = pd.read_csv('field-data/East_Greenland_2019_ssc.csv', nrows = 76)
+# print(sco19.shape[0]/3)
+# sco19['SSC_mass'] = ((sco19['Sed. G'] / sco19['Sample g']) * 100).astype('float64')
+# sco19 = sco19[['SSC_mass']]
+# df_ce = pd.merge(sco18, sco19, how = 'outer')
+# df_ce = sco18
+# df_ce = df_ce[df_ce['SSC_mass'] > cut]
+# df_ce['Region'] = 'Kangertittivaq'
+
 
 df = pd.concat([df_sw, df_cw, df_ce])
+print(df.head())
 print(df['SSC_mass'].describe())
 print(df.shape)
+quit()
 
-fig, ax = plt.subplots(figsize = (12, 6))
+fig, ax = plt.subplots(figsize = (11, 6))
 sns.despine(fig)
 sns.histplot(
     df, x = 'SSC_mass', hue = 'Region', 
@@ -53,14 +69,15 @@ pct25 = df['SSC_mass'].quantile(0.25)
 median = df['SSC_mass'].median()
 pct75 = df['SSC_mass'].quantile(0.75)
 
-ax.plot([median, median], [16.25, 18.5], 'k', lw = 2)
-ax.plot([pct25, pct75], [17.5, 17.5], 'k:', lw = 2)
-ax.annotate('[', [pct25, 17.25], ha = 'center', va = 'center', fontsize = 20, color = 'k')
-ax.annotate(']', [pct75 - 0.1, 17.25], ha = 'center', va = 'center', fontsize = 20, color = 'k')
-ax.annotate(f'{np.round(median, 2)}%', [median + 0.25, 15], ha = 'center', va = 'center', fontsize = 12, color = 'k')
-ax.annotate(f'{np.round(pct75, 2)}%', [pct75 + 0.5, 15], ha = 'center', va = 'center', fontsize = 12, color = 'k')
-ax.annotate('Median + IQR', [2, 20], ha = 'left', va = 'center', fontsize = 12, color = 'k')
+ax.plot([median, median], [21, 24], 'k', lw = 2)
+ax.plot([pct25, pct75], [22.5, 22.5], 'k:', lw = 2)
+ax.annotate('[', [pct25, 22.25], ha = 'center', va = 'center', fontsize = 20, color = 'k')
+ax.annotate(']', [pct75 - 0.1, 22.25], ha = 'center', va = 'center', fontsize = 20, color = 'k')
+ax.annotate(f'{np.round(median, 2)}%', [median + 0.25, 19.25], ha = 'center', va = 'center', fontsize = 12, color = 'k')
+ax.annotate(f'{np.round(pct75, 2)}%', [pct75 + 0.5, 19.25], ha = 'center', va = 'center', fontsize = 12, color = 'k')
+ax.annotate('Median + IQR', [2, 25], ha = 'left', va = 'center', fontsize = 12, color = 'k')
 
 ax.add_patch(plt.Rectangle((15.5, 0), 28, 10, color = 'k', linestyle = '--', alpha = 0.1, lw = 2))
 ax.annotate('$\mathit{Solid}$ or $\mathit{stratified}$ basal ice facies', [29, 11], ha = 'center', va = 'center', fontsize = 12, color = 'k')
 plt.savefig('figures/rafted-sediment-concentration.png', dpi = 300, transparent = True)
+# plt.show()
