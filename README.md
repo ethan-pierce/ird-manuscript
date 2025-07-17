@@ -1,6 +1,6 @@
-# Quantifying Sediment Transport by Greenland's Icebergs
+# Sediment Transport by Greenland's Icebergs
 
-Code and figures for the manuscript: **"Quantifying sediment transport by Greenland's icebergs."**
+Source code and model output for the manuscript: **"Sediment transport by Greenland's icebergs."**
 
 This work is included as a chapter in the following PhD dissertation:  
 **"From bedrock to bergs: sediment entrainment beneath glaciers and ice sheets"**
@@ -8,8 +8,8 @@ This work is included as a chapter in the following PhD dissertation:
 ## Contact
 
 **Ethan Pierce**  
-Email: ethan.pierce@colorado.edu  
-GitHub: [via github](https://github.com)
+Email: ethan.g.pierce@dartmouth.edu  
+GitHub: [via github](https://github.com/ethan-pierce/ird-manuscript)
 
 For questions about the research or code, feel free to reach out!
 
@@ -25,20 +25,18 @@ For questions about the research or code, feel free to reach out!
 
 | Directory | Description |
 |-----------|-------------|
-| `components/` | Process models for subglacial erosion, hydrology, and sediment transport |
-| `field-data/` | Iceberg sample sheets, ice basin shapefiles, and solid ice discharge table |
+| `components/` | Process models for erosion, hydrology, and sediment transport |
+| `data/` | Field measurements, catchment shapefiles, and ice discharge |
 | `figures/` | Finalized figures included in the manuscript |
-| `gis/` | Geographic information system data and maps |
-| `models/` | Code used to drive coupled model runs |
-| `models/hydrology/` | Hydrological model components |
-| `models/sediment/` | Sediment transport model components |
-| `models/inputs/` | Model input data and configurations |
+| `models/` | Main model execution scripts |
+| `output/` | Model output files |
+| `utils/` | Utility functions for grid generation, numerics, and plotting |
 
 ## Citation
 
 If you use this code in your research, please cite the associated manuscript:
 
-> Pierce, E. (Year). Quantifying sediment transport by Greenland's icebergs. *Journal Name*, Volume(Issue), Pages.
+*Citation pending, manuscript currently under peer review.*
 
 ## License
 
