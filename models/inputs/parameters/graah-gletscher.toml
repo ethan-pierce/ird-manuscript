@@ -1,0 +1,63 @@
+name = "Graah Gletscher"
+region = "CE"
+
+[files]
+path_to_shapefile = "data/shapefiles/graah-gletscher.geojson"
+path_to_bedmachine = "data/BedMachineGreenland-v5.nc"
+path_to_measures = "data/MEaSUREs_120m.nc"
+path_to_basalmelt = "data/basalmelt.nc"
+path_to_discharge = "data/gate_D.nc"
+
+[grid]
+quality = 30
+mesh_size = 10000.0
+buffer = 500
+tolerance = 20
+
+[inputs]
+"surface.sigma" = 7
+"surface.truncate" = 2
+"sia.ice_flow_coefficient" = 2.4e-24
+"sia.glens_n" = 3
+
+[hydrology]
+"sheet_flow_height.initial" = 0.001
+"sheet_flow_height.minimum" = 0.001
+"potential.initial" = 1.0
+time_steps = 100
+dt = 3600
+"max_diff.cutoff" = 1000
+"max_diff.percentile" = 75
+cavity_spacing = 10
+bed_bump_height = 1.0
+sheet_conductivity = 0.05
+flow_exp_a = 3
+flow_exp_b = 2
+
+[sediment]
+"till_thickness.initial" = 0.001
+"fringe_thickness.initial" = 0.001
+"fringe_thickness.minimum" = 0.001
+"dispersed_thickness.initial" = 0.001
+CFL = 0.2
+n_years = 400
+save_every = 1
+"erosion.coefficient" = 2.7e-7
+"erosion.exponent" = 2
+"fringe.surface_energy" = 0.034
+"fringe.pore_throat_radius" = 1e-6
+"fringe.till_porosity" = 0.35
+"fringe.till_permeability" = 4.1e-17
+"fringe.till_grain_radius" = 0.00015
+"fringe.film_thickness" = 1e-8
+"fringe.alpha" = 3.1
+"fringe.beta" = 0.53
+
+[discharge]
+gate = 138
+"terminus.min_x" = 547280.0
+"terminus.max_x" = 549740.0
+"terminus.min_y" = -1875739.0
+"terminus.max_y" = -1873994.0
+"fringe_thickness.cutoff" = 99.5
+"dispersed_thickness.cutoff" = 99.5
