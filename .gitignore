@@ -5,7 +5,7 @@ bib.bib# pixi environments
 
 # large data files
 data/BedMachineGreenland-v5.nc
-data/GBaTSv2.nc
+data/basalmelt.nc
 data/MEaSUREs_120m.nc
 
 # checkpoints
