@@ -1,14 +1,12 @@
-models/inputs/*.nc
-models/inputs/grids
-models/hydrology/outputs
-models/sediment/outputs
-drafts/
-figures/*/*.svg
-figures/inkscape/
+# pixi environments
 bib.bib# pixi environments
 .pixi/*
 !.pixi/config.toml
 
+# large data files
 data/BedMachineGreenland-v5.nc
 data/GBaTSv2.nc
 data/MEaSUREs_120m.nc
+
+# checkpoints
+ird_model/models/checkpoints/
