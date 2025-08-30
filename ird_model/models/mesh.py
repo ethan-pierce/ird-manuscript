@@ -176,7 +176,7 @@ def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
     )
     destination = np.vstack([grid.node_x, grid.node_y]).T
 
-    melt = clipped['basal_melt']
+    melt = clipped['totalmelt']
     melt[:] *= 1 / SEC_PER_A
     melt[:] = np.where(melt < 0, 0, melt)
     melt.rio.write_nodata(np.nan, inplace = True)
