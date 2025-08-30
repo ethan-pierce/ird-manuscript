@@ -5,4 +5,8 @@ models/sediment/outputs
 drafts/
 figures/*/*.svg
 figures/inkscape/
-bib.bib
+bib.bib# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+data/BedMachineGreenland-v5.nc

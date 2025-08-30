@@ -1,12 +1,13 @@
 """Main script for running all models with checkpointing support."""
 
+import os
 import argparse
 import tomli
 import pickle
+import xarray as xr
 from pathlib import Path
 
-from .models.mesh import generate_mesh, interpolate_fields, save_grid
-from .models import run_grid, run_hydrology, run_sediment, run_discharge
+from ird_model.models.mesh import generate_mesh, interpolate_fields, save_grid
 
 def parse_args():
     """Parse command line arguments."""
@@ -37,7 +38,7 @@ def load_config(path):
 
 def get_checkpoint_path(stage, config):
     """Get path for stage checkpoint."""
-    return Path(f"models/checkpoints/{stage}/{Path(config['name']).stem}.pickle")
+    return Path(f"ird_model/models/checkpoints/{stage}/{Path(config['name']).stem}.pickle")
 
 def load_stage_data(stage, config):
     """Load data from a stage's checkpoint."""
@@ -63,13 +64,13 @@ def run_stage(stage, config, prev_stage = None):
     # Run the stage
     print(f"Running {stage}")
     if stage == "grid":
+        print("Generating mesh")
         grid = generate_mesh(
             shapefile = config['files']['path_to_shapefile'],
             buffer = config['grid']['buffer'],
             tolerance = config['grid']['tolerance'],
             quality = config['grid']['quality'],
-            mesh_size = config['grid']['mesh_size'],
-            path = config['files']['path_to_grid']
+            mesh_size = config['grid']['mesh_size']
         )
         grid = interpolate_fields(
             grid = grid,

@@ -19,7 +19,8 @@ For questions about the research or code, feel free to reach out!
 
 ## Workflow
 
-*Workflow documentation coming soon...*
+There is a helper script ``download_data_files.sh`` for downloading the requisite input data. For this script to work,
+you will need to replace the environment variables ($XYZ) with the correct values (or enter directly in the script).
 
 ## Repository Structure
 

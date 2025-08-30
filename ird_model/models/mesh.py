@@ -4,6 +4,7 @@ import numpy as np
 import xarray as xr
 import pickle
 import shapely
+import geopandas as gpd
 from scipy.interpolate import RBFInterpolator
 from landlab_triangle import TriangleModelGrid
 
@@ -12,8 +13,7 @@ def generate_mesh(
     buffer: float,
     tolerance: float,
     quality: int,
-    mesh_size: int,
-    path: str,
+    mesh_size: int
 ):
     """Generate a mesh from a shapefile."""
     polygon = _prepare_polygon(shapefile, buffer, tolerance)
@@ -49,7 +49,7 @@ def save_grid(
 def _prepare_polygon(shapefile: str, buffer: float, tolerance: float):
     """Prepare a smooth polygon from a shapefile."""
     with open(shapefile, 'rb') as f:
-        geoseries = pickle.load(f)
+        geoseries = gpd.read_file(f)
     
     smooth_polygon = (
         geoseries.loc[0, 'geometry'].buffer(buffer, join_style = 'round')
@@ -181,7 +181,7 @@ def _add_SIA_velocity(grid: TriangleModelGrid, ice_flow_coefficient: float, glen
     sia.params['glens_n'] = glens_n
     fields = {
         'ice_thickness': Field(grid.at_node['ice_thickness'][:], 'm', 'node'),
-        'surface_elevation': Field(grid.at_node['surface_elevation'][:], 'm', 'node')
+        'surface_elevation': Field(grid.at_node['surface_elevation'][:], 'm', 'node'),
         'bed_elevation': Field(grid.at_node['bed_elevation'][:], 'm', 'node')
     }
     sia_output = sia.run_one_step(0.0, fields)
