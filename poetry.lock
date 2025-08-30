@@ -647,28 +647,28 @@ files = [
 
 [[package]]
 name = "landlab"
-version = "2.9.2"
+version = "2.10.1"
 description = "Open-source Python package for numerical modeling of Earth surface dynamics."
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "landlab-2.9.2-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:933b3e2575f9b47be2e0907be4fad718d99cf56ab5d5e83d65c0038f60a218e7"},
-    {file = "landlab-2.9.2-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:6c59bef72294ac60d2932cf673fc17a41c9d521855d8fcaff845f965e4ec2e62"},
-    {file = "landlab-2.9.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a04b4ba0eb95ad43f798aaddce862f8ebd30e21b9d620a3c8de41076739de30a"},
-    {file = "landlab-2.9.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:61dd1a4f9ceea1c50bef87ebd8226792c795240d2969d7c6e276c3995c4fd05a"},
-    {file = "landlab-2.9.2-cp310-cp310-win_amd64.whl", hash = "sha256:8a6ea3ec74bbae0135e2a8638f8a1164b5b0fa2a427040e996aa4a706c4d44aa"},
-    {file = "landlab-2.9.2-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:5f474b1520b8376771b83c6142760190e517924d78fdff4c8c9f38247bdb979c"},
-    {file = "landlab-2.9.2-cp311-cp311-macosx_12_0_x86_64.whl", hash = "sha256:44f3e004fa0dd9395d339aa7676e87d3598c162b42414f86daa51ffbbe2cafe8"},
-    {file = "landlab-2.9.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:92278b4813556bbf25493742859f04bd772d51772e60641f7c5157e2337251af"},
-    {file = "landlab-2.9.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:04b6541b5c0f14bda89fda27a04c9766527b9350c885b7028084ee146a3add72"},
-    {file = "landlab-2.9.2-cp311-cp311-win_amd64.whl", hash = "sha256:2a4386bb458608359848878961e701cec56d341a04cbf7b89fae6c473dcbba57"},
-    {file = "landlab-2.9.2-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:4e070efcb9c9126aceb7326c731c12329652db2882e99622c9a215f7f598257c"},
-    {file = "landlab-2.9.2-cp312-cp312-macosx_12_0_x86_64.whl", hash = "sha256:1ec26733a2ce9968488cfda7ab8ebdf7d58994651511ddcc8f4d6eec550c8258"},
-    {file = "landlab-2.9.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:049b335f90a197cf0da3e485acb0b33d8063b58fa246f2ac958d7f1598f1b2c3"},
-    {file = "landlab-2.9.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:166e43040049d430524a2db662fb8f9bda35dcebd0a10db3f160eb02e60ad49c"},
-    {file = "landlab-2.9.2-cp312-cp312-win_amd64.whl", hash = "sha256:d3d47939672b989074b17487a5897a7764028f24be9df6047b8f93f4e9db8cc9"},
-    {file = "landlab-2.9.2.tar.gz", hash = "sha256:bf671897c65eb8ea8091a8bb0da87d5c0994a6aab9a287e90b673120ab4bbe8f"},
+    {file = "landlab-2.10.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:64669447e49b61d41f9ba921b7b4404402024abc7d61932e5a4fcd177d04d6ea"},
+    {file = "landlab-2.10.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:a0f085a52e5310df1021d37d096793ea3762a2d9bbb34b15af3169d49cac4138"},
+    {file = "landlab-2.10.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0972ff805c6eab9ac6e8dcd6c960011b918ab7efe349c40cb1f9d7aed6b72122"},
+    {file = "landlab-2.10.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:05ed69dbd357733d7063341183a330a441f77e5c4900a2e5af949617586aca4f"},
+    {file = "landlab-2.10.1-cp311-cp311-win_amd64.whl", hash = "sha256:f7668cbfaf8f232b358b3db204ae225b5cddf7eaf14465ea482627fdf6ff3bb1"},
+    {file = "landlab-2.10.1-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:de38c565b18d67c13d4fda2d403ed7b5a8a495fe36887f1b4f3d981d3ff0c811"},
+    {file = "landlab-2.10.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:c9205f7853d98c22eafe1d0a3ef51bf295bf3c559d33c17ffb425c12e6baf0d5"},
+    {file = "landlab-2.10.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:781b01b3f506a9aa1c1598b34003a938343949d70962ab423e8592f45bdedef5"},
+    {file = "landlab-2.10.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b38becf6aeba1918dfaa894f1b7064bb43859a5df31c624c5c9faea08ecd4a52"},
+    {file = "landlab-2.10.1-cp312-cp312-win_amd64.whl", hash = "sha256:bc26f9101987d809cb12894aab3d5e8a2483d69eb67568f683472beb6bb1e9f9"},
+    {file = "landlab-2.10.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:cc159fe696c1afcfe0603fff62867f1f51b8102323f6ad0fd4c66575fc578444"},
+    {file = "landlab-2.10.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:210b309d24f222e8b5476694f8f7c0459a0c22ae8ad1a6274ec04e4e70ed856f"},
+    {file = "landlab-2.10.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:55cd6677d37a3726cf4c01baa912c2e7c1225797a7097c3e289decd90c58699b"},
+    {file = "landlab-2.10.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1d15a09c36dd63683b7422d43ac57a3f88c5724b693ed4468bfbfdc1dc1a1ff5"},
+    {file = "landlab-2.10.1-cp313-cp313-win_amd64.whl", hash = "sha256:2ea21403b6505edc4501dc1f726852673d30e37a3cc2be1f68642c0550832806"},
+    {file = "landlab-2.10.1.tar.gz", hash = "sha256:54cebbedaace5bc2795dc917b3683c2cb6d6f6daa2f1f595a13bd8b278ce512b"},
 ]
 
 [package.dependencies]
@@ -686,7 +686,7 @@ xarray = ">=0.16"
 
 [package.extras]
 dev = ["nox"]
-testing = ["coveralls", "hypothesis", "pytest", "pytest-cov", "pytest-datadir", "pytest-xdist"]
+testing = ["coverage", "hypothesis", "pytest", "pytest-datadir", "pytest-xdist"]
 
 [[package]]
 name = "lineax"
@@ -1316,6 +1316,18 @@ test-arrow = ["pyarrow"]
 tests = ["check-manifest", "coverage (>=7.4.2)", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "trove-classifiers (>=2024.10.12)"]
 typing = ["typing-extensions ; python_version < \"3.10\""]
 xmp = ["defusedxml"]
+
+[[package]]
+name = "pip"
+version = "25.2"
+description = "The PyPA recommended tool for installing Python packages."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "pip-25.2-py3-none-any.whl", hash = "sha256:6d67a2b4e7f14d8b31b8b52648866fa717f45a1eb70e83002f4331d07e953717"},
+    {file = "pip-25.2.tar.gz", hash = "sha256:578283f006390f85bb6282dffb876454593d637f5d1be494b5202ce4877e71f2"},
+]
 
 [[package]]
 name = "platformdirs"
@@ -1950,6 +1962,48 @@ files = [
 ]
 
 [[package]]
+name = "tomli"
+version = "2.2.1"
+description = "A lil' TOML parser"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "tomli-2.2.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:678e4fa69e4575eb77d103de3df8a895e1591b48e740211bd1067378c69e8249"},
+    {file = "tomli-2.2.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:023aa114dd824ade0100497eb2318602af309e5a55595f76b626d6d9f3b7b0a6"},
+    {file = "tomli-2.2.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ece47d672db52ac607a3d9599a9d48dcb2f2f735c6c2d1f34130085bb12b112a"},
+    {file = "tomli-2.2.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6972ca9c9cc9f0acaa56a8ca1ff51e7af152a9f87fb64623e31d5c83700080ee"},
+    {file = "tomli-2.2.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c954d2250168d28797dd4e3ac5cf812a406cd5a92674ee4c8f123c889786aa8e"},
+    {file = "tomli-2.2.1-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:8dd28b3e155b80f4d54beb40a441d366adcfe740969820caf156c019fb5c7ec4"},
+    {file = "tomli-2.2.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:e59e304978767a54663af13c07b3d1af22ddee3bb2fb0618ca1593e4f593a106"},
+    {file = "tomli-2.2.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:33580bccab0338d00994d7f16f4c4ec25b776af3ffaac1ed74e0b3fc95e885a8"},
+    {file = "tomli-2.2.1-cp311-cp311-win32.whl", hash = "sha256:465af0e0875402f1d226519c9904f37254b3045fc5084697cefb9bdde1ff99ff"},
+    {file = "tomli-2.2.1-cp311-cp311-win_amd64.whl", hash = "sha256:2d0f2fdd22b02c6d81637a3c95f8cd77f995846af7414c5c4b8d0545afa1bc4b"},
+    {file = "tomli-2.2.1-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:4a8f6e44de52d5e6c657c9fe83b562f5f4256d8ebbfe4ff922c495620a7f6cea"},
+    {file = "tomli-2.2.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8d57ca8095a641b8237d5b079147646153d22552f1c637fd3ba7f4b0b29167a8"},
+    {file = "tomli-2.2.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4e340144ad7ae1533cb897d406382b4b6fede8890a03738ff1683af800d54192"},
+    {file = "tomli-2.2.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:db2b95f9de79181805df90bedc5a5ab4c165e6ec3fe99f970d0e302f384ad222"},
+    {file = "tomli-2.2.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:40741994320b232529c802f8bc86da4e1aa9f413db394617b9a256ae0f9a7f77"},
+    {file = "tomli-2.2.1-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:400e720fe168c0f8521520190686ef8ef033fb19fc493da09779e592861b78c6"},
+    {file = "tomli-2.2.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:02abe224de6ae62c19f090f68da4e27b10af2b93213d36cf44e6e1c5abd19fdd"},
+    {file = "tomli-2.2.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:b82ebccc8c8a36f2094e969560a1b836758481f3dc360ce9a3277c65f374285e"},
+    {file = "tomli-2.2.1-cp312-cp312-win32.whl", hash = "sha256:889f80ef92701b9dbb224e49ec87c645ce5df3fa2cc548664eb8a25e03127a98"},
+    {file = "tomli-2.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:7fc04e92e1d624a4a63c76474610238576942d6b8950a2d7f908a340494e67e4"},
+    {file = "tomli-2.2.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:f4039b9cbc3048b2416cc57ab3bda989a6fcf9b36cf8937f01a6e731b64f80d7"},
+    {file = "tomli-2.2.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:286f0ca2ffeeb5b9bd4fcc8d6c330534323ec51b2f52da063b11c502da16f30c"},
+    {file = "tomli-2.2.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a92ef1a44547e894e2a17d24e7557a5e85a9e1d0048b0b5e7541f76c5032cb13"},
+    {file = "tomli-2.2.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9316dc65bed1684c9a98ee68759ceaed29d229e985297003e494aa825ebb0281"},
+    {file = "tomli-2.2.1-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e85e99945e688e32d5a35c1ff38ed0b3f41f43fad8df0bdf79f72b2ba7bc5272"},
+    {file = "tomli-2.2.1-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:ac065718db92ca818f8d6141b5f66369833d4a80a9d74435a268c52bdfa73140"},
+    {file = "tomli-2.2.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:d920f33822747519673ee656a4b6ac33e382eca9d331c87770faa3eef562aeb2"},
+    {file = "tomli-2.2.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:a198f10c4d1b1375d7687bc25294306e551bf1abfa4eace6650070a5c1ae2744"},
+    {file = "tomli-2.2.1-cp313-cp313-win32.whl", hash = "sha256:d3f5614314d758649ab2ab3a62d4f2004c825922f9e370b29416484086b264ec"},
+    {file = "tomli-2.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:a38aa0308e754b0e3c67e344754dff64999ff9b513e691d0e786265c93583c69"},
+    {file = "tomli-2.2.1-py3-none-any.whl", hash = "sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc"},
+    {file = "tomli-2.2.1.tar.gz", hash = "sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.14.1"
 description = "Backported and Experimental Type Hints for Python 3.9+"
@@ -2018,4 +2072,4 @@ viz = ["cartopy (>=0.23)", "matplotlib", "nc-time-axis", "seaborn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "63475dd00be7413678682dad1ae05f7adcbf6afafebcce97132db961164e3b9a"
+content-hash = "d556db4f15f24ac255ed3303e2ddc1036433fda696089491daa8c1fd034e68a0"
