@@ -12,7 +12,7 @@ import jax.numpy as jnp
 import equinox as eqx
 import optimistix as optx
 from jaxtyping import Array
-from glacierbento import Field, Component
+from ird_model.utils.core import Field, Component
 
 
 class DispersedLayer(Component):

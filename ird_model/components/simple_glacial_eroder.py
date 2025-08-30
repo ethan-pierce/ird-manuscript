@@ -18,7 +18,7 @@ import jax
 import jax.numpy as jnp
 import equinox as eqx
 from jaxtyping import Float, Array
-from glacierbento import Field, Component
+from ird_model.utils.core import Field, Component
 
 
 class SimpleGlacialEroder(Component):

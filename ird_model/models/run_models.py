@@ -38,7 +38,7 @@ def load_config(path):
 
 def get_checkpoint_path(stage, config):
     """Get path for stage checkpoint."""
-    return Path(f"ird_model/models/checkpoints/{stage}/{Path(config['name']).stem}.pickle")
+    return Path(f"ird_model/models/checkpoints/{stage}/{Path(config['name'].lower().replace(' ', '-'))}.pickle")
 
 def load_stage_data(stage, config):
     """Load data from a stage's checkpoint."""
@@ -51,7 +51,7 @@ def load_stage_data(stage, config):
 
 def run_stage(stage, config, prev_stage = None):
     """Run a model stage with checkpoint support."""
-    os.makedirs(f"models/checkpoints/{stage}", exist_ok = True)
+    os.makedirs(f"ird_model/models/checkpoints/{stage}", exist_ok = True)
     checkpoint = get_checkpoint_path(stage, config)
 
     # Load previous stage data if needed

@@ -17,7 +17,7 @@ import equinox as eqx
 import optimistix as optx
 import lineax as lx
 from jaxtyping import Array
-from glacierbento import Field, Component
+from ird_model.utils.core import Field, Component
 
 
 class FrozenFringe(Component):

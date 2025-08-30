@@ -17,7 +17,7 @@ import jax.numpy as jnp
 import equinox as eqx
 from jaxtyping import Float, Array
 from scipy.spatial import KDTree
-from glacierbento import Field, Component
+from ird_model.utils.core import Field, Component
 
 
 class TVDAdvector(Component):

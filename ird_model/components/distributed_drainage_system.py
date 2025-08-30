@@ -24,8 +24,8 @@ import equinox as eqx
 import lineax as lx
 import optimistix as optx
 from jaxtyping import Array
-from glacierbento import Field, Component
-from glacierbento.utils import MatrixAssembler
+from ird_model.utils.core import Field, Component
+from ird_model.utils.matrix import MatrixAssembler
 
 
 class DistributedDrainageSystem(Component):

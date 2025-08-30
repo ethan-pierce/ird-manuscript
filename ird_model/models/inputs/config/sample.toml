@@ -6,7 +6,7 @@ region = "SW"
 path_to_shapefile = "path/to/shapefile.geojson"
 path_to_bedmachine = "path/to/BedMachineGreenland.nc"
 path_to_measures = "path/to/MEaSUREs.nc"
-path_to_basalmelt = "path/to/basalmelt.nc"
+path_to_basalmelt = "path/to/GBaTSv2.nc"
 path_to_discharge = "path/to/discharge.nc"
 
 [grid]

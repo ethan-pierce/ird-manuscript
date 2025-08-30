@@ -1,12 +1,24 @@
 """Construct a mesh and interpolate input fields."""
 
 import numpy as np
+import jax.numpy as jnp
 import xarray as xr
+import rioxarray as rxr
 import pickle
 import shapely
 import geopandas as gpd
 from scipy.interpolate import RBFInterpolator
+from scipy.ndimage import gaussian_filter
 from landlab_triangle import TriangleModelGrid
+
+from ird_model.components import ShallowIceApproximation
+from ird_model.utils.core import Field
+from ird_model.utils.static_grid import freeze_grid
+
+import warnings
+warnings.simplefilter(action = 'ignore', category = FutureWarning)
+
+SEC_PER_A = 31556926
 
 def generate_mesh(
     shapefile: str,
@@ -32,7 +44,8 @@ def interpolate_fields(
     glens_n: int
 ):
     """Interpolate input data onto a mesh."""
-    _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], sigma, truncate)
+    names = ['ice_thickness', 'bed_elevation', 'surface_elevation']
+    _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma, truncate)
     _add_measures_velocity(grid, measures)
     _add_basalmelt(grid, basalmelt)
     _add_SIA_velocity(grid, ice_flow_coefficient, glens_n)
@@ -81,8 +94,9 @@ def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, qua
     )
     return grid
 
-def _add_bedmachine_field(grid: TriangleModelGrid, dataset: xr.Dataset, field: str, smooth: bool = False, sigma: int = 7, truncate: int = 2):
+def _add_bedmachine_field(grid: TriangleModelGrid, dataset: xr.Dataset, field: str, name: str, smooth: bool = False, sigma: int = 7, truncate: int = 2):
     """Add a field to a grid."""
+    nodata = dataset.attrs['no_data']
     clipped = dataset.rio.clip_box(
         minx = np.min(grid.node_x),
         maxx = np.max(grid.node_x),
@@ -101,20 +115,20 @@ def _add_bedmachine_field(grid: TriangleModelGrid, dataset: xr.Dataset, field: s
 
     interp = RBFInterpolator(coords, values, neighbors = 9)
     interpolated = interp(destination)
-    grid.add_field(field, interpolated, at = 'node')
+    grid.add_field(name, interpolated, at = 'node')
 
-def _add_from_bedmachine(grid: TriangleModelGrid, bedmachine: xr.Dataset, fields: list[str]):
+def _add_from_bedmachine(grid: TriangleModelGrid, bedmachine: xr.Dataset, fields: list[str], names: list[str], sigma: int = 7, truncate: int = 2):
     """Add fields from BedMachine to a grid."""
     crs = bedmachine.attrs['proj4'].split('=')[-1]
     bedmachine.rio.write_crs(crs, inplace = True)
 
-    for field in fields:
+    for i, field in enumerate(fields):
         if field == 'surface':
             smooth = True
         else:
             smooth = False
 
-        _add_bedmachine_field(grid, bedmachine, field, smooth)
+        _add_bedmachine_field(grid, bedmachine, field, names[i], smooth, sigma, truncate)
 
 def _add_measures_velocity(grid: TriangleModelGrid, measures: xr.Dataset):
     """Add a field from MEaSUREs to a grid."""
@@ -161,7 +175,8 @@ def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
         maxy = np.max(grid.node_y)
     )
     destination = np.vstack([grid.node_x, grid.node_y]).T
-    melt = clipped['totalmelt']
+
+    melt = clipped['basal_melt']
     melt[:] *= 1 / SEC_PER_A
     melt[:] = np.where(melt < 0, 0, melt)
     melt.rio.write_nodata(np.nan, inplace = True)
@@ -185,7 +200,9 @@ def _add_SIA_velocity(grid: TriangleModelGrid, ice_flow_coefficient: float, glen
         'bed_elevation': Field(grid.at_node['bed_elevation'][:], 'm', 'node')
     }
     sia_output = sia.run_one_step(0.0, fields)
-    U_deformation = grid.map_mean_of_links_to_node(jnp.abs(sia_output['deformation_velocity'].value))
+
+    frozen = freeze_grid(grid)
+    U_deformation = frozen.map_mean_of_links_to_node(jnp.abs(sia_output['deformation_velocity'].value))
     U_surface = jnp.asarray(np.sqrt(grid.at_node['vx'][:]**2 + grid.at_node['vy'][:]**2))
     U_sliding = jnp.where(U_surface > U_deformation, U_surface - U_deformation, 0.0)
     grid.add_field('sliding_velocity', U_sliding, at = 'node')

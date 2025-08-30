@@ -12,7 +12,7 @@ import jax.numpy as jnp
 import equinox as eqx
 from abc import abstractmethod
 from jaxtyping import Array, Float
-from glacierbento.utils import StaticGrid
+from ird_model.utils.static_grid import StaticGrid
 
 
 def check_location(grid, array) -> str:
