@@ -10,3 +10,4 @@ bib.bib# pixi environments
 !.pixi/config.toml
 
 data/BedMachineGreenland-v5.nc
+data/GBaTSv2.nc
