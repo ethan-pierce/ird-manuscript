@@ -12,3 +12,6 @@ mv data/GBaTSv2/joemacgregor-GBaTSv2-879adcb/GBaTSv2.nc data/GBaTSv2.nc
 rm -rf data/GBaTSv2-GBaTSv2.zip
 rm -rf data/GBaTSv2
 
+echo "Downloading MEaSUREs_120m.nc"
+wget -P data/ https://its-live-data.s3.amazonaws.com/velocity_mosaic/v2/static/ITS_LIVE_velocity_120m_RGI05A_0000_v02.nc
+mv data/ITS_LIVE_velocity_120m_RGI05A_0000_v02.nc data/MEaSUREs_120m.nc
