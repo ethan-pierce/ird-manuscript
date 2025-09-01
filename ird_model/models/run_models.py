@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ird_model.models.mesh import generate_mesh, interpolate_fields, save_grid
 from ird_model.models.hydrology import run_to_steady_state
+from ird_model.models.sediment import run_sediment_transport
 
 def parse_args():
     """Parse command line arguments."""
@@ -92,8 +93,10 @@ def run_stage(stage, config, prev_stage = None):
         data = run_to_steady_state(grid, config['hydrology'])
 
     elif stage == "sediment":
-        # TODO: Implement sediment model using prev_data (hydrology)
-        data = {}
+        print("Running sediment transport models")
+        grid = prev_data
+        data = run_sediment_transport(grid, config['sediment'])
+
     elif stage == "discharge":
         # TODO: Implement discharge calculations using prev_data (sediment)
         data = {}
