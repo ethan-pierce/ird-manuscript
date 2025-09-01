@@ -75,8 +75,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-75.1-hfee45f7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/idna-3.10-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/importlib-metadata-8.7.0-pyhe01879c_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/jax-0.7.0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jaxlib-0.7.0-cpu_py313h3e4434d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/jax-0.6.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jaxlib-0.6.2-cpu_py313h7e95880_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jaxtyping-0.3.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jinja2-3.1.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/joblib-1.5.2-pyhd8ed1ab_0.conda
@@ -1116,21 +1116,21 @@ packages:
 - pypi: ./
   name: ird-model
   version: 0.1.0
-  sha256: 0d24d5e5db84150b6a5fad74a3c5cbaa98b1c127dece690f3c33f7809b880b6f
+  sha256: 22b0353c67582eaacf275925e4f75440935bdcabb637c11b3c580f79b85645bc
   requires_dist:
   - landlab-triangle>=0.0.2,<0.0.3
   requires_python: '>=3.11'
   editable: true
-- conda: https://conda.anaconda.org/conda-forge/noarch/jax-0.7.0-pyhd8ed1ab_0.conda
-  sha256: c9dfa0d2fd5e42de88c8d2f62f495b6747a7d08310c4bbf94d0fa7e0dcaad573
-  md5: cf9f37f6340f024ff8e3c3666de41bf5
+- conda: https://conda.anaconda.org/conda-forge/noarch/jax-0.6.2-pyhd8ed1ab_0.conda
+  sha256: cd87eb6872d5429647506daa1c50c0e0459eb04aba39c914dcbbacf9b07895fa
+  md5: db9b3178b5b7b19a0917a350802518fe
   depends:
   - importlib-metadata >=4.6
-  - jaxlib >=0.7.0,<=0.7.0
+  - jaxlib >=0.6.2,<=0.6.2
   - ml_dtypes >=0.5.0
   - numpy >=1.26
   - opt_einsum
-  - python >=3.11
+  - python >=3.10
   - scipy >=1.12
   constrains:
   - cudnn >=9.8,<10.0
@@ -1138,11 +1138,11 @@ packages:
   license_family: APACHE
   purls:
   - pkg:pypi/jax?source=hash-mapping
-  size: 1836006
-  timestamp: 1753869796115
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/jaxlib-0.7.0-cpu_py313h3e4434d_0.conda
-  sha256: f5e9f1e068e8689c11cf3d7045165c10277db41eb10b6ad5fa5d4b62802c141f
-  md5: a14f6f9dcc4c030f549931f5a879cf59
+  size: 1797258
+  timestamp: 1753574279311
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/jaxlib-0.6.2-cpu_py313h7e95880_1.conda
+  sha256: 9057c1db17fb215029260e7c125b4384ac5bf338f57522ea84991b818a058fbf
+  md5: d846e16f61ba7adfef87f6c0bd407bc5
   depends:
   - __osx >=11.0
   - libabseil * cxx17*
@@ -1158,13 +1158,13 @@ packages:
   - python_abi 3.13.* *_cp313
   - scipy >=1.9
   constrains:
-  - jax >=0.7.0
+  - jax >=0.6.2
   license: Apache-2.0
   license_family: APACHE
   purls:
   - pkg:pypi/jaxlib?source=hash-mapping
-  size: 53900105
-  timestamp: 1753579262998
+  size: 53075920
+  timestamp: 1753408586026
 - conda: https://conda.anaconda.org/conda-forge/noarch/jaxtyping-0.3.2-pyhd8ed1ab_0.conda
   sha256: c8f51056484f23a8a2a47540155095d099983ff8bc03a9b064effa9c8157cf5c
   md5: 4a3e5a04f0d9ee0d00a1cdd686e5c60f

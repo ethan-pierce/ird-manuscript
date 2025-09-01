@@ -53,16 +53,10 @@ def run_to_steady_state(
             output['sheet_flow_height'].value,
         )
 
-        output = eqx.tree_at(
-            lambda t: (t['potential'], t['sheet_flow_height']),
-            output,
-            (Field(updated_potential, 'Pa', 'node'), Field(updated_flow_height, 'm', 'node'))
-        )
-
         fields = eqx.tree_at(
             lambda t: (t['potential'], t['sheet_flow_height']),
             fields,
-            (output['potential'], output['sheet_flow_height'])
+            (Field(updated_potential, 'Pa', 'node'), Field(updated_flow_height, 'm', 'node'))
         )
 
         return fields

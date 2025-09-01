@@ -30,7 +30,8 @@ def generate_mesh(
     """Generate a mesh from a shapefile."""
     polygon = _prepare_polygon(shapefile, buffer, tolerance)
     nodes_x, nodes_y, holes = _extract_nodes(polygon)
-    mesh = _build_grid(nodes_x, nodes_y, holes, quality, mesh_size)
+    max_area = polygon.area // mesh_size
+    mesh = _build_grid(nodes_x, nodes_y, holes, quality, max_area)
     return mesh
 
 def interpolate_fields(
@@ -84,9 +85,9 @@ def _extract_nodes(polygon):
     holes = polygon.interiors
     return nodes_x, nodes_y, holes
 
-def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, quality: int, mesh_size: int):
+def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, quality: int, max_area: float):
     """Make a new TriangleModelGrid."""
-    triangle_opts = 'pDevjz' + 'q' + str(quality) + 'a' + str(mesh_size)
+    triangle_opts = 'pDevjz' + 'q' + str(quality) + 'a' + str(max_area)
     grid = TriangleModelGrid(
         (nodes_y, nodes_x), 
         holes = holes, 

@@ -50,7 +50,6 @@ class Field(eqx.Module):
         if self.location not in ["node", "link", "patch", "corner", "face", "cell"]:
             raise ValueError("Invalid location for field.")
 
-
 class Component(eqx.Module):
     """Components are individual process models with a common interface.
     
