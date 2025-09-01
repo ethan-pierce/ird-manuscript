@@ -6,7 +6,7 @@ region = "SW"
 path_to_shapefile = "path/to/shapefile.geojson"
 path_to_bedmachine = "path/to/BedMachineGreenland.nc"
 path_to_measures = "path/to/MEaSUREs.nc"
-path_to_basalmelt = "path/to/GBaTSv2.nc"
+path_to_basalmelt = "path/to/basalmelt.nc"
 path_to_discharge = "path/to/discharge.nc"
 
 [grid]
@@ -26,7 +26,7 @@ tolerance = 20
 "sheet_flow_height.minimum" = 1e-3 # meters
 "potential.initial" = 1.0 # % of overburden pressure
 time_steps = 100 # iterations
-dt = 3600 # seconds
+dt = 86400 # seconds
 "max_diff.cutoff" = 1000 # Pa
 "max_diff.percentile" = 75
 cavity_spacing = 10 # meters

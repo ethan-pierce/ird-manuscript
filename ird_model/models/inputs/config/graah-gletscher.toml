@@ -5,7 +5,7 @@ region = "CE"
 path_to_shapefile = "data/shapefiles/graah-gletscher.geojson"
 path_to_bedmachine = "data/BedMachineGreenland-v5.nc"
 path_to_measures = "data/MEaSUREs_120m.nc"
-path_to_basalmelt = "data/GBaTSv2.nc"
+path_to_basalmelt = "data/basalmelt.nc"
 path_to_discharge = "data/gate_D.nc"
 
 [grid]

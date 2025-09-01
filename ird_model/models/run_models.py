@@ -8,6 +8,7 @@ import xarray as xr
 from pathlib import Path
 
 from ird_model.models.mesh import generate_mesh, interpolate_fields, save_grid
+from ird_model.models.hydrology import run_to_steady_state
 
 def parse_args():
     """Parse command line arguments."""
@@ -62,7 +63,6 @@ def run_stage(stage, config, prev_stage = None):
             raise RuntimeError(f"{prev_stage} data required for {stage} stage")
 
     # Run the stage
-    print(f"Running {stage}")
     if stage == "grid":
         print("Generating mesh")
         grid = generate_mesh(
@@ -83,10 +83,14 @@ def run_stage(stage, config, prev_stage = None):
             glens_n = config['inputs']['sia.glens_n']
         )
         data = grid
+        print("Number of nodes: ", grid.number_of_nodes)
+        print("Number of elements: ", grid.number_of_cells)
 
     elif stage == "hydrology":
-        # TODO: Implement hydrology model using prev_data (grid)
-        data = {}
+        print("Running hydrology models")
+        grid = prev_data
+        data = run_to_steady_state(grid, config['hydrology'])
+
     elif stage == "sediment":
         # TODO: Implement sediment model using prev_data (hydrology)
         data = {}

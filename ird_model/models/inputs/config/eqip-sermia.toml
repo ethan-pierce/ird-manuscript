@@ -10,7 +10,7 @@ path_to_discharge = "data/gate_D.nc"
 
 [grid]
 quality = 30
-mesh_size = 10000.0
+mesh_size = 25000.0
 buffer = 250
 tolerance = 15
 
@@ -25,7 +25,7 @@ tolerance = 15
 "sheet_flow_height.minimum" = 0.001
 "potential.initial" = 1.0
 time_steps = 100
-dt = 3600
+dt = 86400
 "max_diff.cutoff" = 1000
 "max_diff.percentile" = 75
 cavity_spacing = 10
