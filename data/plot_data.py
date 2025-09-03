@@ -8,14 +8,14 @@ sns.set_theme(style = 'ticks')
 
 cut = 0.1
 
-df_sw = pd.read_csv('field-data/NuupKangerlua_ssc_results.csv', sep = ',')
+df_sw = pd.read_csv('data/NuupKangerlua_ssc_results.csv', sep = ',')
 # print(len(df_sw['Name'].unique()))
 print(df_sw.shape[0])
 df_sw = df_sw[df_sw['SSC_mass'] > cut]
 df_sw['Region'] = 'Nuup Kangerlua'
 
 df_cw = pd.read_csv(
-    'field-data/SAMPLEWEIGHTS_EQ22icebergsamples.csv', 
+    'data/SAMPLEWEIGHTS_EQ22icebergsamples.csv', 
     header = 5, 
     names = ['Sample', 'GRL', 'Field weight', 'Lab weight', '% loss', 'Tape weight', 'Empty weight', 'Sed. weight', 'SSC_mass'],
     sep = '\s+'
@@ -26,7 +26,7 @@ df_cw['SSC_mass'] = df_cw['SSC_mass'] * 100
 df_cw = df_cw[df_cw['SSC_mass'] > cut]
 df_cw['Region'] = 'Ikerasak'
 
-sco18 = pd.read_csv('field-data/Kangertittivaq2018.csv')
+sco18 = pd.read_csv('data/Kangertittivaq2018.csv')
 sco18['SSC_mass'] = sco18['RSC'] * 100
 sco18 = sco18[sco18['SSC_mass'] > cut][['SSC_mass']]
 df_ce = sco18
@@ -49,7 +49,7 @@ print(df_ce.shape[0])
 
 df = pd.concat([df_sw, df_cw, df_ce])
 print(df.head())
-print(df['SSC_mass'].describe())
+print(df.groupby('Region')['SSC_mass'].describe())
 print(df.shape)
 quit()
 

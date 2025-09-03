@@ -52,8 +52,9 @@ save_every = 1
 "fringe.film_thickness" = 1e-8
 "fringe.alpha" = 3.1
 "fringe.beta" = 0.53
+"critical_depth" = 100
 
-[discharge]
+[fluxes]
 gate = 152
 "terminus.min_x" = 691700.0
 "terminus.max_x" = 696600.0
@@ -61,3 +62,4 @@ gate = 152
 "terminus.max_y" = -2050300.0
 "fringe_thickness.cutoff" = 99.5
 "dispersed_thickness.cutoff" = 99.5
+"dispersed.concentration" = 0.03

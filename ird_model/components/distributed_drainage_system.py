@@ -183,7 +183,7 @@ class DistributedDrainageSystem(Component):
 
         return jnp.where(
             self._grid.cell_at_node != -1,
-            solution.value,
+            updated_sheet_flow,
             0.0
         )
 

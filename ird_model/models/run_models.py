@@ -4,12 +4,15 @@ import os
 import argparse
 import tomli
 import pickle
+import numpy as np
 import xarray as xr
+import pandas as pd
 from pathlib import Path
 
-from ird_model.models.mesh import generate_mesh, interpolate_fields, save_grid
+from ird_model.models.mesh import generate_mesh, interpolate_fields
 from ird_model.models.hydrology import run_to_steady_state
 from ird_model.models.sediment import run_sediment_transport
+from ird_model.models.fluxes import calc_fluxes
 
 def parse_args():
     """Parse command line arguments."""
@@ -26,9 +29,9 @@ def parse_args():
         "--stages",
         type = str,
         nargs = "+",
-        choices = ["grid", "hydrology", "sediment", "discharge"],
+        choices = ["grid", "hydrology", "sediment", "fluxes"],
         help = "Stages to run",
-        default = ["grid", "hydrology", "sediment", "discharge"]
+        default = ["grid", "hydrology", "sediment", "fluxes"]
     )
     args = parser.parse_args()
     return args.config[0], args.stages
@@ -97,9 +100,32 @@ def run_stage(stage, config, prev_stage = None):
         grid = prev_data
         data = run_sediment_transport(grid, config['sediment'])
 
-    elif stage == "discharge":
-        # TODO: Implement discharge calculations using prev_data (sediment)
-        data = {}
+    elif stage == "fluxes":
+        fringe_flux, dispersed_flux = calc_fluxes(prev_data, config)
+        discharge_df = pd.read_csv('ird_model/models/inputs/gate_D.csv', header = 0)
+        ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[872:2696].mean()
+
+        df = pd.DataFrame(
+            {
+                'glacier': config['name'],
+                'region': config['region'],
+                'area': np.sum(prev_data.cell_area_at_node),
+                'ice_discharge': np.float64(ice_discharge),
+                'fringe_flux': np.float64(fringe_flux),
+                'dispersed_flux': np.float64(dispersed_flux),
+                'ice_flow_coefficient': np.float64(config['inputs']['sia.ice_flow_coefficient']),
+                'erosion_coefficient': np.float64(config['sediment']['erosion.coefficient']),
+                'erosion_exponent': np.float64(config['sediment']['erosion.exponent']),
+                'sheet_conductivity': np.float64(config['hydrology']['sheet_conductivity']),
+                'fringe_porosity': np.float64(config['sediment']['fringe.till_porosity']),
+                'fringe_grain_radius': np.float64(config['sediment']['fringe.till_grain_radius']),
+                'fringe_film_thickness': np.float64(config['sediment']['fringe.film_thickness']),
+                'dispersed_concentration': np.float64(config['fluxes']['dispersed.concentration']),
+                'critical_depth': np.float64(config['sediment']['critical_depth'])
+            },
+            index = [0]
+        )
+        data = df
     
     # Save checkpoint
     with open(checkpoint, "wb") as f:
@@ -116,7 +142,7 @@ if __name__ == "__main__":
         "grid": None,
         "hydrology": "grid",
         "sediment": "hydrology",
-        "discharge": "sediment"
+        "fluxes": "sediment"
     }
     
     # Run requested stages in sequence

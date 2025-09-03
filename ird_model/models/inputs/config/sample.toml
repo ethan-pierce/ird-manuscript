@@ -53,8 +53,9 @@ save_every = 1 # years
 "fringe.film_thickness" = 1e-8
 "fringe.alpha" = 3.1
 "fringe.beta" = 0.53
+"critical_depth" = 100
 
-[discharge]
+[fluxes]
 gate = 0
 "terminus.min_x" = -1
 "terminus.max_x" = 1
@@ -62,3 +63,4 @@ gate = 0
 "terminus.max_y" = 1
 "fringe_thickness.cutoff" = 99.5 # percentile
 "dispersed_thickness.cutoff" = 99.5 # percentile
+"dispersed.concentration" = 0.03
