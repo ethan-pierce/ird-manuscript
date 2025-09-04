@@ -16,11 +16,7 @@ for file in os.listdir('ird_model/models/checkpoints/fluxes'):
 
 df = pd.concat(dfs)
 ice_yield = (df['ice_discharge'] * 1e12 / df['area']).to_numpy()
-sed_yield = ((df['fringe_flux'] + df['dispersed_flux']) * 2700 / df['area']).to_numpy()
-
-print(df[df['glacier'] == 'Vestfjord Gletsjer']['dispersed_flux'] + df[df['glacier'] == 'Vestfjord Gletsjer']['fringe_flux'])
-quit()
-
+sed_yield = ((df['fringe_flux'] + df['dispersed_flux']) / df['area']).to_numpy()
 
 fig, ax = plt.subplots(figsize = (10, 6))
 plt.scatter(np.log10(ice_yield), np.log10(sed_yield), s = 100, alpha = 0.5)

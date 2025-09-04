@@ -14,15 +14,13 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     terminus, terminus_cells = find_terminus(tmg, config)
     terminus_velocity, cell_outflow_width = calc_velocity_outflow(tmg, config)
 
-    fringe_at_cells = tmg.at_node['fringe_thickness'][tmg.cell_at_node]
-    fringe_concentration = 1 - fringe_porosity
-    fringe_load = fringe_at_cells * fringe_concentration
-    fringe_flux = np.sum(fringe_load[terminus_cells] * terminus_velocity * cell_outflow_width)
+    fringe_at_cells = tmg.at_node['fringe_thickness'][tmg.node_at_cell][terminus_cells]
+    fringe_sediment = fringe_at_cells * (1 - fringe_porosity) * 2700
+    fringe_flux = np.sum(fringe_sediment * terminus_velocity * cell_outflow_width)
 
-    dispersed_at_cells = tmg.at_node['dispersed_thickness'][tmg.cell_at_node]
-    dispersed_concentration = config['dispersed.concentration']
-    dispersed_load = dispersed_at_cells * dispersed_concentration
-    dispersed_flux = np.sum(dispersed_load[terminus_cells] * terminus_velocity * cell_outflow_width)
+    dispersed_at_cells = tmg.at_node['dispersed_thickness'][tmg.node_at_cell][terminus_cells]
+    dispersed_sediment = dispersed_at_cells * config['dispersed.concentration'] * 2700
+    dispersed_flux = np.sum(dispersed_sediment * terminus_velocity * cell_outflow_width)
 
     return fringe_flux, dispersed_flux
 
@@ -37,18 +35,11 @@ def find_terminus(grid, config: dict):
         1,
         0
     )
-
-    terminus_node_indices = np.where(terminus == 1)[0]
-    
-    adjacent_nodes = []
-    for node_idx in terminus_node_indices:
-        adjacent_nodes.extend(grid.adjacent_nodes_at_node[node_idx])
-    
-    adjacent_nodes = np.array(adjacent_nodes)
+    adjacent_nodes = grid.adjacent_nodes_at_node[terminus == 1]
     adjacent_nodes = adjacent_nodes[adjacent_nodes != -1]
-    
     terminus_cells = np.unique(grid.cell_at_node[adjacent_nodes])
     terminus_cells = terminus_cells[terminus_cells != -1]
+
     return terminus, terminus_cells
 
 def calc_velocity_outflow(tmg: TriangleModelGrid, config: dict) -> tuple[np.ndarray, np.ndarray]:
