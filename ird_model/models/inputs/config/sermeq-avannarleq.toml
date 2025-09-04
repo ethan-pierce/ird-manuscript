@@ -19,7 +19,7 @@ tolerance = 30
 "surface.truncate" = 2
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
-"sia.max_surface_slope" = 0.1
+"sia.max_surface_slope" = 0.05
 
 [hydrology]
 "sheet_flow_height.initial" = 0.001

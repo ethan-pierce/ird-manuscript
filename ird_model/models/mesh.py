@@ -47,7 +47,12 @@ def interpolate_fields(
     truncate = config['surface.truncate']
     coeff = config['sia.ice_flow_coefficient']
     glens_n = config['sia.glens_n']
-    max_surface_slope = config['sia.max_surface_slope']
+
+    if 'sia.max_surface_slope' in config:
+        max_surface_slope = config['sia.max_surface_slope']
+    else:
+        max_surface_slope = None
+
     _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma = sigma, truncate = truncate)
     _add_measures_velocity(grid, measures)
     _add_basalmelt(grid, basalmelt)
