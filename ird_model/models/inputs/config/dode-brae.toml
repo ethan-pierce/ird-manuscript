@@ -56,10 +56,10 @@ save_every = 1
 
 [fluxes]
 gate = 160
-"terminus.min_x" = 584982.0
-"terminus.max_x" = 587000.0
-"terminus.min_y" = -2057326.0
-"terminus.max_y" = -2055300.0
+"terminus.min_x" = 579185.0
+"terminus.max_x" = 580000.0
+"terminus.min_y" = -2055628.0
+"terminus.max_y" = -2053418.0
 "fringe_thickness.cutoff" = 99.5
 "dispersed_thickness.cutoff" = 99.5
 "dispersed.concentration" = 0.03
