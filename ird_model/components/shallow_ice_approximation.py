@@ -49,7 +49,8 @@ class ShallowIceApproximation(Component):
             'ice_flow_coefficient': 2.4e-24, # Pa^-n s^-1
             'glens_n': 3,
             'ice_density': 917,
-            'gravity': 9.81
+            'gravity': 9.81,
+            'max_surface_slope': None
         }
     ):
         """Initialize the component."""
@@ -74,6 +75,13 @@ class ShallowIceApproximation(Component):
 
         surface_elevation = fields['surface_elevation'].value
         surface_slope = self._grid.calc_grad_at_link(surface_elevation)
+
+        if self.params['max_surface_slope'] is not None:
+            surface_slope = jnp.where(
+                jnp.abs(surface_slope) > self.params['max_surface_slope'], 
+                jnp.sign(surface_slope) * self.params['max_surface_slope'], 
+                surface_slope
+            )
 
         ice_thickness = fields['ice_thickness'].value
         thickness_at_links = self._grid.map_mean_of_link_nodes_to_link(ice_thickness)

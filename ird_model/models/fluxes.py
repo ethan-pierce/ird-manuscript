@@ -14,10 +14,6 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     terminus, terminus_cells = find_terminus(tmg, config)
     terminus_velocity, cell_outflow_width = calc_velocity_outflow(tmg, config)
 
-    from ird_model.utils.plotting import plot_triangle_mesh
-    plot_triangle_mesh(tmg, terminus)
-    quit()
-
     fringe_at_cells = tmg.at_node['fringe_thickness'][tmg.node_at_cell][terminus_cells]
     fringe_sediment = fringe_at_cells * (1 - fringe_porosity) * 2700
     fringe_flux = np.sum(fringe_sediment * terminus_velocity * cell_outflow_width)

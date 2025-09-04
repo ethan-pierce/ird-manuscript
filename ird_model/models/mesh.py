@@ -39,17 +39,19 @@ def interpolate_fields(
     bedmachine: xr.Dataset,
     measures: xr.Dataset,
     basalmelt: xr.Dataset,
-    sigma: int,
-    truncate: int,
-    ice_flow_coefficient: float,
-    glens_n: int
+    config: dict
 ):
     """Interpolate input data onto a mesh."""
     names = ['ice_thickness', 'bed_elevation', 'surface_elevation']
-    _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma, truncate)
+    sigma = config['surface.sigma']
+    truncate = config['surface.truncate']
+    coeff = config['sia.ice_flow_coefficient']
+    glens_n = config['sia.glens_n']
+    max_surface_slope = config['sia.max_surface_slope']
+    _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma = sigma, truncate = truncate)
     _add_measures_velocity(grid, measures)
     _add_basalmelt(grid, basalmelt)
-    _add_SIA_velocity(grid, ice_flow_coefficient, glens_n)
+    _add_SIA_velocity(grid, coeff, glens_n, max_surface_slope)
     return grid
 
 def save_grid(
@@ -191,13 +193,14 @@ def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
     melt_interpolated = melt_interp(destination)
     grid.add_field('basal_melt_rate', melt_interpolated, at = 'node')
 
-def _add_SIA_velocity(grid: TriangleModelGrid, ice_flow_coefficient: float, glens_n: int):
+def _add_SIA_velocity(grid: TriangleModelGrid, coeff: float, glens_n: int, max_surface_slope: float):
     """Add SIA velocity to a grid."""
     frozen = freeze_grid(grid)
     sia = ShallowIceApproximation(frozen)
 
-    sia.params['ice_flow_coefficient'] = ice_flow_coefficient
+    sia.params['ice_flow_coefficient'] = coeff
     sia.params['glens_n'] = glens_n
+    sia.params['max_surface_slope'] = max_surface_slope
     fields = {
         'ice_thickness': Field(grid.at_node['ice_thickness'][:], 'm', 'node'),
         'surface_elevation': Field(grid.at_node['surface_elevation'][:], 'm', 'node'),

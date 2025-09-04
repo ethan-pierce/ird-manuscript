@@ -81,10 +81,7 @@ def run_stage(stage, config, prev_stage = None):
             bedmachine = xr.open_dataset(config['files']['path_to_bedmachine']),
             measures = xr.open_dataset(config['files']['path_to_measures']),
             basalmelt = xr.open_dataset(config['files']['path_to_basalmelt']),
-            sigma = config['inputs']['surface.sigma'],
-            truncate = config['inputs']['surface.truncate'],
-            ice_flow_coefficient = config['inputs']['sia.ice_flow_coefficient'],
-            glens_n = config['inputs']['sia.glens_n']
+            config = config['inputs']
         )
         data = grid
         print("Number of nodes: ", grid.number_of_nodes)

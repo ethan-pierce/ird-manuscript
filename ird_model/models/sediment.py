@@ -167,8 +167,8 @@ def set_initial_fields(grid: StaticGrid, tmg: TriangleModelGrid, fringe: FrozenF
         'theta': Field(jnp.ones(grid.number_of_nodes), '', 'node'),
         'base_temperature': Field(fringe._calc_base_temperature(), 'K', 'node'),
         'dispersed_thickness': Field(jnp.zeros(grid.number_of_nodes) + 1e-3, 'm', 'node'),
-        'velocity_x': Field(velocity_x, 'm/s', 'node'),
-        'velocity_y': Field(velocity_y, 'm/s', 'node')
+        'velocity_x': Field(tmg.at_node['vx'][:], 'm/s', 'node'),
+        'velocity_y': Field(tmg.at_node['vy'][:], 'm/s', 'node')
     }
 
     return fields

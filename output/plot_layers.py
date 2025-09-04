@@ -54,10 +54,3 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         1,
         0
     )
-
-    if file == 'vestfjord-gletsjer.pickle':
-        cut = np.percentile(grid.at_node['fringe_thickness'], 99.5)
-        fringe = np.where(grid.at_node['fringe_thickness'] > cut, cut, grid.at_node['fringe_thickness'])
-        plot_triangle_mesh(grid, np.log10(fringe), title = file)
-        quit()
-
