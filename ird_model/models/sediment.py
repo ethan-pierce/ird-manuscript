@@ -68,21 +68,21 @@ def run_sediment_transport(tmg: TriangleModelGrid, config: dict) -> dict[str, Fi
             (advected_fringe, advected_dispersed)
         )
 
-        fringe_bc = jnp.where(
-            grid.status_at_node != 0,
-            fringe.params['min_fringe'],
-            fields['fringe_thickness'].value
-        )
-        dispersed_bc = jnp.where(
-            grid.status_at_node != 0,
-            fringe.params['min_fringe'],
-            fields['dispersed_thickness'].value
-        )
-        fields = eqx.tree_at(
-            lambda t: (t['fringe_thickness'].value, t['dispersed_thickness'].value),
-            fields,
-            (fringe_bc, dispersed_bc)
-        )
+        # fringe_bc = jnp.where(
+        #     grid.status_at_node != 0,
+        #     fringe.params['min_fringe'],
+        #     fields['fringe_thickness'].value
+        # )
+        # dispersed_bc = jnp.where(
+        #     grid.status_at_node != 0,
+        #     fringe.params['min_fringe'],
+        #     fields['dispersed_thickness'].value
+        # )
+        # fields = eqx.tree_at(
+        #     lambda t: (t['fringe_thickness'].value, t['dispersed_thickness'].value),
+        #     fields,
+        #     (fringe_bc, dispersed_bc)
+        # )
 
         return fields
 

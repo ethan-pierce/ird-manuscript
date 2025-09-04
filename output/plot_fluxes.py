@@ -18,9 +18,6 @@ df = pd.concat(dfs)
 ice_yield = (df['ice_discharge'] * 1e12 / df['area']).to_numpy()
 sed_yield = ((df['fringe_flux'] + df['dispersed_flux']) / df['area']).to_numpy()
 
-print(np.log10(sed_yield))
-quit()
-
 fig, ax = plt.subplots(figsize = (10, 6))
 plt.scatter(np.log10(ice_yield), np.log10(sed_yield), s = 100, alpha = 0.5)
 plt.xlabel('Ice yield (kg$^3$ a$^{-1}$)')

@@ -91,7 +91,8 @@ def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, qua
     grid = TriangleModelGrid(
         (nodes_y, nodes_x), 
         holes = holes, 
-        triangle_opts = triangle_opts
+        triangle_opts = triangle_opts,
+        reorient_links = True
     )
     return grid
 

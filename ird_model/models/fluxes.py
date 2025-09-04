@@ -14,36 +14,38 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     terminus, terminus_cells = find_terminus(tmg, config)
     terminus_velocity, cell_outflow_width = calc_velocity_outflow(tmg, config)
 
-    fringe_pct99 = np.percentile(tmg.at_node['fringe_thickness'], config['fringe_thickness.cutoff'])
     fringe_at_cells = tmg.at_node['fringe_thickness'][tmg.cell_at_node]
-    fringe_thickness = np.where(fringe_at_cells > fringe_pct99, fringe_pct99, fringe_at_cells)
     fringe_concentration = 1 - fringe_porosity
-    fringe_load = fringe_thickness * fringe_concentration * 2700
+    fringe_load = fringe_at_cells * fringe_concentration
     fringe_flux = np.sum(fringe_load[terminus_cells] * terminus_velocity * cell_outflow_width)
 
-    dispersed_pct99 = np.percentile(tmg.at_node['dispersed_thickness'], config['dispersed_thickness.cutoff'])
     dispersed_at_cells = tmg.at_node['dispersed_thickness'][tmg.cell_at_node]
-    dispersed_thickness = np.where(dispersed_at_cells > dispersed_pct99, dispersed_pct99, dispersed_at_cells)
     dispersed_concentration = config['dispersed.concentration']
-    dispersed_load = dispersed_thickness * dispersed_concentration * 2700
+    dispersed_load = dispersed_at_cells * dispersed_concentration
     dispersed_flux = np.sum(dispersed_load[terminus_cells] * terminus_velocity * cell_outflow_width)
 
     return fringe_flux, dispersed_flux
 
-def find_terminus(grid: StaticGrid, config: dict):
+def find_terminus(grid, config: dict):
     """Find the terminus of the glacier."""
-    bounds = [config['terminus.min_x'], config['terminus.max_x'], config['terminus.min_y'], config['terminus.max_y']]
-
     terminus = np.where(
         (grid.status_at_node != 0)
-        & (grid.node_x > bounds[0])
-        & (grid.node_x < bounds[1])
-        & (grid.node_y > bounds[2])
-        & (grid.node_y < bounds[3]),
+        & (grid.node_x > config['terminus.min_x'])
+        & (grid.node_x < config['terminus.max_x'])
+        & (grid.node_y > config['terminus.min_y'])
+        & (grid.node_y < config['terminus.max_y']),
         1,
         0
     )
-    adjacent_nodes = grid.adjacent_nodes_at_node[terminus == 1]
+    terminus_node_indices = np.where(terminus == 1)[0]
+    
+    adjacent_nodes = []
+    for node_idx in terminus_node_indices:
+        adjacent_nodes.extend(grid.adjacent_nodes_at_node[node_idx])
+    
+    adjacent_nodes = np.array(adjacent_nodes)
+    adjacent_nodes = adjacent_nodes[adjacent_nodes != -1]
+    
     terminus_cells = np.unique(grid.cell_at_node[adjacent_nodes])
     terminus_cells = terminus_cells[terminus_cells != -1]
     return terminus, terminus_cells
