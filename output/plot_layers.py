@@ -44,6 +44,20 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
     with open(f'ird_model/models/inputs/config/{file.replace(".pickle", ".toml")}', 'rb') as f:
         config = tomli.load(f)
 
-    if file == 'akullersuup-sermia.pickle':
-        plot_triangle_mesh(grid, np.log10(grid.at_node['fringe_thickness']))
+    config = config['fluxes']
+    terminus = np.where(
+        (grid.status_at_node != 0)
+        & (grid.node_x > config['terminus.min_x'])
+        & (grid.node_x < config['terminus.max_x'])
+        & (grid.node_y > config['terminus.min_y'])
+        & (grid.node_y < config['terminus.max_y']),
+        1,
+        0
+    )
+
+    if file == 'vestfjord-gletsjer.pickle':
+        cut = np.percentile(grid.at_node['fringe_thickness'], 99.5)
+        fringe = np.where(grid.at_node['fringe_thickness'] > cut, cut, grid.at_node['fringe_thickness'])
+        plot_triangle_mesh(grid, np.log10(fringe), title = file)
         quit()
+

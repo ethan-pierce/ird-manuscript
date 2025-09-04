@@ -92,7 +92,7 @@ def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, qua
         (nodes_y, nodes_x), 
         holes = holes, 
         triangle_opts = triangle_opts,
-        reorient_links = True
+        reorient_links = False
     )
     return grid
 
@@ -193,7 +193,9 @@ def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
 
 def _add_SIA_velocity(grid: TriangleModelGrid, ice_flow_coefficient: float, glens_n: int):
     """Add SIA velocity to a grid."""
-    sia = ShallowIceApproximation(grid)
+    frozen = freeze_grid(grid)
+    sia = ShallowIceApproximation(frozen)
+
     sia.params['ice_flow_coefficient'] = ice_flow_coefficient
     sia.params['glens_n'] = glens_n
     fields = {
@@ -203,7 +205,6 @@ def _add_SIA_velocity(grid: TriangleModelGrid, ice_flow_coefficient: float, glen
     }
     sia_output = sia.run_one_step(0.0, fields)
 
-    frozen = freeze_grid(grid)
     U_deformation = frozen.map_mean_of_links_to_node(jnp.abs(sia_output['deformation_velocity'].value))
     U_surface = jnp.asarray(np.sqrt(grid.at_node['vx'][:]**2 + grid.at_node['vy'][:]**2))
     U_sliding = jnp.where(U_surface > U_deformation, U_surface - U_deformation, 0.0)

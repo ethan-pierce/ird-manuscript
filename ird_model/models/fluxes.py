@@ -37,6 +37,7 @@ def find_terminus(grid, config: dict):
         1,
         0
     )
+
     terminus_node_indices = np.where(terminus == 1)[0]
     
     adjacent_nodes = []
