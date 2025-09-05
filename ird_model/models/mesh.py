@@ -55,7 +55,7 @@ def interpolate_fields(
 
     _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma = sigma, truncate = truncate)
     _add_measures_velocity(grid, measures)
-    _add_basalmelt_2022(grid, basalmelt)
+    _add_basalmelt_2021(grid, basalmelt)
     _add_SIA_velocity(grid, coeff, glens_n, max_surface_slope)
     return grid
 
@@ -99,7 +99,7 @@ def _build_grid(nodes_x: np.ndarray, nodes_y: np.ndarray, holes: np.ndarray, qua
         (nodes_y, nodes_x), 
         holes = holes, 
         triangle_opts = triangle_opts,
-        reorient_links = False
+        reorient_links = True
     )
     return grid
 

@@ -19,6 +19,7 @@ tolerance = 20
 "surface.truncate" = 2
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
+"sia.max_surface_slope" = 0.05
 
 [hydrology]
 "sheet_flow_height.initial" = 0.001
@@ -40,7 +41,7 @@ flow_exp_b = 2
 "fringe_thickness.minimum" = 0.001
 "dispersed_thickness.initial" = 0.001
 CFL = 0.2
-n_years = 400
+n_years = 200
 save_every = 1
 "erosion.coefficient" = 2.7e-7
 "erosion.exponent" = 2

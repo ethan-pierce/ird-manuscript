@@ -55,6 +55,17 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         0
     )
 
-    if file == 'eqip-sermia.pickle':
-        plot_triangle_mesh(grid, np.log10(grid.at_node['dispersed_thickness']))
+    if file == 'magga-dan-gletsjer.pickle':
+        # is_terminus = np.where(terminus == 1, 1, 0)
+        # plot_triangle_mesh(grid, is_terminus)
+        # quit()
+
+        cut_off = np.percentile(grid.at_node['fringe_thickness'], config['fringe_thickness.cutoff'])
+        fringe = np.where(grid.at_node['fringe_thickness'] > cut_off, cut_off, grid.at_node['fringe_thickness'])
+        plot_triangle_mesh(grid, fringe, title = 'Fringe thickness')
+        cut_off = np.percentile(grid.at_node['dispersed_thickness'], config['dispersed_thickness.cutoff'])
+        dispersed = np.where(grid.at_node['dispersed_thickness'] > cut_off, cut_off, grid.at_node['dispersed_thickness'])
+        plot_triangle_mesh(grid, dispersed, title = 'Dispersed thickness')
+
+        plot_triangle_mesh(grid, grid.at_node['sliding_velocity'])
 

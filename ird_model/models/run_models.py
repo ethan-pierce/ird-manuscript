@@ -100,7 +100,7 @@ def run_stage(stage, config, prev_stage = None):
     elif stage == "fluxes":
         fringe_flux, dispersed_flux = calc_fluxes(prev_data, config)
         discharge_df = pd.read_csv('ird_model/models/inputs/gate_D.csv', header = 0)
-        ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[872:2696].mean()
+        ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[1744:2853].mean()
 
         df = pd.DataFrame(
             {
