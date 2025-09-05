@@ -55,7 +55,7 @@ def interpolate_fields(
 
     _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma = sigma, truncate = truncate)
     _add_measures_velocity(grid, measures)
-    _add_basalmelt(grid, basalmelt)
+    _add_basalmelt_2022(grid, basalmelt)
     _add_SIA_velocity(grid, coeff, glens_n, max_surface_slope)
     return grid
 
@@ -173,7 +173,7 @@ def _add_measures_velocity(grid: TriangleModelGrid, measures: xr.Dataset):
     vy_interpolated = vy_interp(destination)
     grid.add_field('vy', vy_interpolated, at = 'node')
 
-def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
+def _add_basalmelt_2021(grid: TriangleModelGrid, basalmelt: xr.Dataset):
     """Add basal melt to a grid."""
     basalmelt.rio.write_crs('epsg:3413', inplace = True)
 
@@ -191,6 +191,32 @@ def _add_basalmelt(grid: TriangleModelGrid, basalmelt: xr.Dataset):
     melt.rio.write_nodata(np.nan, inplace = True)
     melt = melt.rio.interpolate_na(method = 'nearest')
 
+    melt_stacked = melt.stack(z = ['x', 'y'])
+    melt_coords = np.vstack([melt_stacked.coords['x'], melt_stacked.coords['y']]).T
+    melt_values = melt.values.flatten(order = 'F')
+    melt_interp = RBFInterpolator(melt_coords, melt_values, neighbors = 9)
+    melt_interpolated = melt_interp(destination)
+    grid.add_field('basal_melt_rate', melt_interpolated, at = 'node')
+
+def _add_basalmelt_2022(grid: TriangleModelGrid, basalmelt: xr.Dataset):
+    """Add basal melt to a grid - use the 2022 data."""
+    basalmelt.rio.write_crs('epsg:3413', inplace = True)
+    
+    clipped = basalmelt.rio.clip_box(
+        minx = np.min(grid.node_x),
+        maxx = np.max(grid.node_x),
+        miny = np.min(grid.node_y),
+        maxy = np.max(grid.node_y)
+    )
+    destination = np.vstack([grid.node_x, grid.node_y]).T
+    
+    melt = clipped['gfmelt'] + clipped['fricmelt']
+    melt[:] *= 1 / SEC_PER_A
+    melt[:] = np.where(melt < 0, 0, melt)
+    melt.rio.write_nodata(np.nan, inplace = True)
+    melt.rio.write_crs('epsg:3413', inplace = True)
+    melt = melt.rio.interpolate_na(method = 'nearest')
+    
     melt_stacked = melt.stack(z = ['x', 'y'])
     melt_coords = np.vstack([melt_stacked.coords['x'], melt_stacked.coords['y']]).T
     melt_values = melt.values.flatten(order = 'F')

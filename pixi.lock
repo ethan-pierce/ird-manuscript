@@ -1118,7 +1118,7 @@ packages:
 - pypi: ./
   name: ird-model
   version: 0.1.0
-  sha256: c9284bea2bd3b5b22df054ef8e40a4bb3977ff6a4c35b477b4d38c4d11e5dbc7
+  sha256: c74c88f726ea594713a56b1b3180b7ca7c21d513a780ad2a2f9db2dce69c4ee5
   requires_dist:
   - landlab-triangle>=0.0.2,<0.0.3
   requires_python: '>=3.11'

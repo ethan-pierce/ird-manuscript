@@ -55,3 +55,6 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         0
     )
 
+    if file == 'eqip-sermia.pickle':
+        plot_triangle_mesh(grid, np.log10(grid.at_node['dispersed_thickness']))
+
