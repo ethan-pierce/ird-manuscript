@@ -3,10 +3,12 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
+import time
+import pickle
 import matplotlib.pyplot as plt
 from scipy.stats import truncnorm, pareto
 
-from ird_model.models.run_models import parse_args, load_config
+from ird_model.models.run_models import parse_args, load_config, load_stage_data
 from ird_model.models.mesh import generate_mesh, interpolate_fields
 from ird_model.models.hydrology import run_to_steady_state
 from ird_model.models.sediment import run_sediment_transport
@@ -25,20 +27,23 @@ distributions = {
     'critical_depth': get_truncated_normal(mean = 100, sd = 50, low = 10, upp = 200),
     'ice_flow_coefficient': get_truncated_normal(mean = 2.4e-24, sd = 5e-24, low = 3.5e-25, upp = 2.4e-24),
     'sheet_conductivity': get_truncated_normal(mean = 0.05, sd = 0.02, low = 0.01, upp = 0.1),
+    'erosion_coefficient': get_truncated_normal(mean = 2.7e-7, sd = 5e-7, low = 1e-7, upp = 5e-7),
+    'erosion_exponent': get_truncated_normal(mean = 2, sd = 0.25, low = 1.5, upp = 2.5),
 }
 
 def make_df(grid: TriangleModelGrid, config: dict):
     """Make a dataframe from the model output."""
-    fringe_flux, dispersed_flux = calc_fluxes(grid, config)
+    fringe_flux, dispersed_flux, ice_flux = calc_fluxes(grid, config)
     discharge_df = pd.read_csv('ird_model/models/inputs/gate_D.csv', header = 0)
-    ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[872:2696].mean()
-    
+    ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[1744:2853].median()
+
     df = pd.DataFrame(
         {
             'glacier': config['name'],
             'region': config['region'],
             'area': np.sum(grid.cell_area_at_node),
             'ice_discharge': np.float64(ice_discharge),
+            'model_ice_flux': np.float64(ice_flux),
             'fringe_flux': np.float64(fringe_flux),
             'dispersed_flux': np.float64(dispersed_flux),
             'ice_flow_coefficient': np.float64(config['inputs']['sia.ice_flow_coefficient']),
@@ -80,42 +85,58 @@ def run_all_stages(config: dict):
 def run_uncertainty(grid: TriangleModelGrid, config: dict):
     """Run each model over a range of uncertain parameters."""
     dfs = []
+    errors = []
     
-    for i in range(30):
-        parameters = {key: val.rvs() for key, val in distributions.items()}
+    n = 10
+    for i in range(n):
+        print(f'RUNNING MONTE CARLO ITERATION {i}')
+        try:
+            if i == 0:
+                start_time = time.time()
 
-        if np.random.randint(0, 1) == 0:
-            parameters['erosion_coefficient'] = 2.7e-7
-            parameters['erosion_exponent'] = 2
-        else:
-            parameters['erosion_coefficient'] = 1e-4
-            parameters['erosion_exponent'] = 0.7
-        
-        config['sediment']['fringe.till_porosity'] = parameters['fringe_till_porosity']
-        config['fluxes']['dispersed.concentration'] = parameters['dispersed_concentration']
-        config['sediment']['fringe.till_grain_radius'] = parameters['fringe_till_grain_radius']
-        config['sediment']['fringe.film_thickness'] = parameters['fringe_film_thickness']
-        config['sediment']['critical_depth'] = parameters['critical_depth']
-        config['inputs']['sia.ice_flow_coefficient'] = parameters['ice_flow_coefficient']
-        config['hydrology']['sheet_conductivity'] = parameters['sheet_conductivity']
-        config['sediment']['erosion.coefficient'] = parameters['erosion_coefficient']
-        config['sediment']['erosion.exponent'] = parameters['erosion_exponent']
+            parameters = {key: val.rvs() for key, val in distributions.items()}
 
-        df = run_all_stages(config)
-        dfs.append(df)
-    
-    return pd.concat(dfs)
+            config['sediment']['fringe.till_porosity'] = parameters['fringe_till_porosity']
+            config['fluxes']['dispersed.concentration'] = parameters['dispersed_concentration']
+            config['sediment']['fringe.till_grain_radius'] = parameters['fringe_till_grain_radius']
+            config['sediment']['fringe.film_thickness'] = parameters['fringe_film_thickness']
+            config['sediment']['critical_depth'] = parameters['critical_depth']
+            config['inputs']['sia.ice_flow_coefficient'] = parameters['ice_flow_coefficient']
+            config['hydrology']['sheet_conductivity'] = parameters['sheet_conductivity']
+            config['sediment']['erosion.coefficient'] = parameters['erosion_coefficient']
+            config['sediment']['erosion.exponent'] = parameters['erosion_exponent']
+
+            df = run_all_stages(config)
+            dfs.append(df)
+
+            if i == 0:
+                end_time = time.time()
+                print(f'Time taken for 1 iteration: {end_time - start_time} seconds')
+                print(f'Total time estimated: {(end_time - start_time) * n / 60 / 60} hours')
+
+        except Exception as e:
+            print(f'Error on iteration {i}: {e}')
+            errors.append(parameters)
+            continue
+
+    return pd.concat(dfs), errors
 
 if __name__ == "__main__":
-    config_path, stages = parse_args()
+    config_path, _ = parse_args()
     config = load_config(config_path)
-    results = run_uncertainty(config)
+    grid = load_stage_data('sediment', config)
+    results, errors = run_uncertainty(grid, config)
 
     total_flux = (results['fringe_flux'] + results['dispersed_flux']) * 1e-9 # Mt/yr
     median = total_flux.median()
     pct25 = total_flux.quantile(0.25)
     pct75 = total_flux.quantile(0.75)
-    print(f'Range: {median - pct25} to {pct75 - median} Mt/yr')
+    print(f'Median: {median} Mt/yr')
+    print(f'25th percentile: {pct25} Mt/yr')
+    print(f'75th percentile: {pct75} Mt/yr')
 
     shortname = config["name"].lower().replace(" ", "-")
     results.to_csv(f'ird_model/models/checkpoints/uncertainty/{shortname}.csv', index = False)
+
+    with open(f'ird_model/models/checkpoints/uncertainty/{shortname}-errors.pickle', 'wb') as f:
+        pickle.dump(errors, f)

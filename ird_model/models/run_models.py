@@ -98,9 +98,9 @@ def run_stage(stage, config, prev_stage = None):
         data = run_sediment_transport(grid, config['sediment'])
 
     elif stage == "fluxes":
-        fringe_flux, dispersed_flux = calc_fluxes(prev_data, config)
+        fringe_flux, dispersed_flux, ice_flux = calc_fluxes(prev_data, config)
         discharge_df = pd.read_csv('ird_model/models/inputs/gate_D.csv', header = 0)
-        ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[1744:2853].mean()
+        ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[1744:2853].median()
 
         df = pd.DataFrame(
             {
@@ -108,6 +108,7 @@ def run_stage(stage, config, prev_stage = None):
                 'region': config['region'],
                 'area': np.sum(prev_data.cell_area_at_node),
                 'ice_discharge': np.float64(ice_discharge),
+                'model_ice_flux': np.float64(ice_flux),
                 'fringe_flux': np.float64(fringe_flux),
                 'dispersed_flux': np.float64(dispersed_flux),
                 'ice_flow_coefficient': np.float64(config['inputs']['sia.ice_flow_coefficient']),

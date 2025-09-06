@@ -53,10 +53,15 @@ def interpolate_fields(
     else:
         max_surface_slope = None
 
+    if 'max_surface_velocity' in config:
+        max_surface_velocity = config['max_surface_velocity']
+    else:
+        max_surface_velocity = None
+
     _add_from_bedmachine(grid, bedmachine, ['thickness', 'bed', 'surface'], names, sigma = sigma, truncate = truncate)
     _add_measures_velocity(grid, measures)
     _add_basalmelt_2021(grid, basalmelt)
-    _add_SIA_velocity(grid, coeff, glens_n, max_surface_slope)
+    _add_SIA_velocity(grid, coeff, glens_n, max_surface_slope, max_surface_velocity)
     return grid
 
 def save_grid(
@@ -224,7 +229,7 @@ def _add_basalmelt_2022(grid: TriangleModelGrid, basalmelt: xr.Dataset):
     melt_interpolated = melt_interp(destination)
     grid.add_field('basal_melt_rate', melt_interpolated, at = 'node')
 
-def _add_SIA_velocity(grid: TriangleModelGrid, coeff: float, glens_n: int, max_surface_slope: float):
+def _add_SIA_velocity(grid: TriangleModelGrid, coeff: float, glens_n: int, max_surface_slope: float, max_surface_velocity: float):
     """Add SIA velocity to a grid."""
     frozen = freeze_grid(grid)
     sia = ShallowIceApproximation(frozen)
@@ -241,5 +246,7 @@ def _add_SIA_velocity(grid: TriangleModelGrid, coeff: float, glens_n: int, max_s
 
     U_deformation = frozen.map_mean_of_links_to_node(jnp.abs(sia_output['deformation_velocity'].value))
     U_surface = jnp.asarray(np.sqrt(grid.at_node['vx'][:]**2 + grid.at_node['vy'][:]**2))
+    if max_surface_velocity is not None:
+        U_surface = jnp.where(U_surface * 31556926 > max_surface_velocity, max_surface_velocity / 31556926, U_surface)
     U_sliding = jnp.where(U_surface > U_deformation, U_surface - U_deformation, 0.0)
     grid.add_field('sliding_velocity', U_sliding, at = 'node')

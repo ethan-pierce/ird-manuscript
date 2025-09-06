@@ -19,6 +19,7 @@ tolerance = 20
 "surface.truncate" = 2
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
+"max_surface_velocity" = 2500
 
 [hydrology]
 "sheet_flow_height.initial" = 0.001
@@ -60,6 +61,6 @@ gate = 147
 "terminus.max_x" = 731200.0
 "terminus.min_y" = -2031340.0
 "terminus.max_y" = -2028690.0
-"fringe_thickness.cutoff" = 99.5
-"dispersed_thickness.cutoff" = 99.5
+"fringe_thickness.cutoff" = 98
+"dispersed_thickness.cutoff" = 98
 "dispersed.concentration" = 0.03

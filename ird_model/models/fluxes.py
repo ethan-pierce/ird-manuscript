@@ -14,7 +14,7 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     terminus, terminus_cells = find_terminus(tmg, config)
     terminus_velocity, cell_outflow_width = calc_velocity_outflow(tmg, config)
 
-    fringe_pct99 = np.percentile(tmg.at_node['fringe_thickness'][tmg.node_at_cell], config['fringe_thickness.cutoff'])
+    fringe_pct99 = np.percentile(tmg.at_node['fringe_thickness'][tmg.node_at_cell], config['fringe_thickness.cutoff'] - 0.5)
     fringe = np.where(tmg.at_node['fringe_thickness'][tmg.node_at_cell] > fringe_pct99, fringe_pct99, tmg.at_node['fringe_thickness'][tmg.node_at_cell])
     fringe_sediment = fringe[terminus_cells] * (1 - fringe_porosity) * 2700
     fringe_flux = np.sum(fringe_sediment * terminus_velocity * cell_outflow_width)
@@ -24,7 +24,11 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     dispersed_sediment = dispersed[terminus_cells] * config['dispersed.concentration'] * 2700
     dispersed_flux = np.sum(dispersed_sediment * terminus_velocity * cell_outflow_width)
 
-    return fringe_flux, dispersed_flux
+    ice_thickness = tmg.at_node['ice_thickness'][tmg.node_at_cell]
+    ice_thickness = np.where(ice_thickness > 0, ice_thickness, 0)
+    ice_flux = np.sum(ice_thickness[terminus_cells] * terminus_velocity * cell_outflow_width * 917)
+
+    return fringe_flux, dispersed_flux, ice_flux
 
 def find_terminus(grid, config: dict):
     """Find the terminus of the glacier."""

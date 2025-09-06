@@ -10,12 +10,12 @@ path_to_discharge = "data/gate_D.nc"
 
 [grid]
 quality = 30
-mesh_size = 4000.0
+mesh_size = 4000
 buffer = 500
 tolerance = 20
 
 [inputs]
-"surface.sigma" = 7
+"surface.sigma" = 10
 "surface.truncate" = 2
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
@@ -26,8 +26,8 @@ tolerance = 20
 "potential.initial" = 1.0
 time_steps = 100
 dt = 3600
-"max_diff.cutoff" = 1000
-"max_diff.percentile" = 75
+"max_diff.cutoff" = 10000
+"max_diff.percentile" = 90
 cavity_spacing = 10
 bed_bump_height = 1.0
 sheet_conductivity = 0.05
@@ -39,8 +39,8 @@ flow_exp_b = 2
 "fringe_thickness.initial" = 0.001
 "fringe_thickness.minimum" = 0.001
 "dispersed_thickness.initial" = 0.001
-CFL = 0.2
-n_years = 400
+CFL = 0.4
+n_years = 500
 save_every = 1
 "erosion.coefficient" = 2.7e-7
 "erosion.exponent" = 2

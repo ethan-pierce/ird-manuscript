@@ -10,24 +10,24 @@ path_to_discharge = "data/gate_D.nc"
 
 [grid]
 quality = 30
-mesh_size = 8000.0
+mesh_size = 5000.0
 buffer = 250
 tolerance = 20
 
 [inputs]
-"surface.sigma" = 7
-"surface.truncate" = 2
+"surface.sigma" = 10
+"surface.truncate" = 1
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
-"sia.max_surface_slope" = 0.05
+"max_surface_velocity" = 3000
 
 [hydrology]
 "sheet_flow_height.initial" = 0.001
 "sheet_flow_height.minimum" = 0.001
 "potential.initial" = 1.0
 time_steps = 20
-dt = 3600
-"max_diff.cutoff" = 1000
+dt = 36000
+"max_diff.cutoff" = 20000
 "max_diff.percentile" = 75
 cavity_spacing = 10
 bed_bump_height = 1.0
@@ -61,6 +61,6 @@ gate = 152
 "terminus.max_x" = 668140.0
 "terminus.min_y" = -2088660.0
 "terminus.max_y" = -2084660.0
-"fringe_thickness.cutoff" = 99.5
+"fringe_thickness.cutoff" = 95
 "dispersed_thickness.cutoff" = 99.5
 "dispersed.concentration" = 0.03

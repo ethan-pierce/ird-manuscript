@@ -55,10 +55,9 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         0
     )
 
-    if file == 'magga-dan-gletsjer.pickle':
-        # is_terminus = np.where(terminus == 1, 1, 0)
-        # plot_triangle_mesh(grid, is_terminus)
-        # quit()
+    if file == 'sydbrae.pickle':
+        is_terminus = np.where(terminus == 1, 1, 0)
+        plot_triangle_mesh(grid, is_terminus)
 
         cut_off = np.percentile(grid.at_node['fringe_thickness'], config['fringe_thickness.cutoff'])
         fringe = np.where(grid.at_node['fringe_thickness'] > cut_off, cut_off, grid.at_node['fringe_thickness'])
@@ -67,5 +66,8 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         dispersed = np.where(grid.at_node['dispersed_thickness'] > cut_off, cut_off, grid.at_node['dispersed_thickness'])
         plot_triangle_mesh(grid, dispersed, title = 'Dispersed thickness')
 
-        plot_triangle_mesh(grid, grid.at_node['sliding_velocity'])
+        plot_triangle_mesh(grid, grid.at_node['sliding_velocity'], title = 'Sliding velocity')
+        plot_triangle_mesh(grid, np.sqrt(grid.at_node['vx'][:]**2 + grid.at_node['vy'][:]**2), title = 'Surface velocity')
+        plot_triangle_mesh(grid, grid.at_node['basal_melt_rate'], title = 'Basal melt rate')
+        plot_triangle_mesh(grid, grid.at_node['effective_pressure'], title = 'Effective pressure')
 

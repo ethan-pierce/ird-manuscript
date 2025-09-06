@@ -10,23 +10,24 @@ path_to_discharge = "data/gate_D.nc"
 
 [grid]
 quality = 30
-mesh_size = 10000.0
+mesh_size = 7000
 buffer = 250
 tolerance = 15
 
 [inputs]
-"surface.sigma" = 7
-"surface.truncate" = 2
+"surface.sigma" = 10
+"surface.truncate" = 10
 "sia.ice_flow_coefficient" = 2.4e-24
 "sia.glens_n" = 3
+"max_surface_velocity" = 2000
 
 [hydrology]
-"sheet_flow_height.initial" = 0.001
+"sheet_flow_height.initial" = 0.01
 "sheet_flow_height.minimum" = 0.001
-"potential.initial" = 1.0
+"potential.initial" = 0.5
 time_steps = 100
-dt = 86400
-"max_diff.cutoff" = 1000
+dt = 3600
+"max_diff.cutoff" = 3000
 "max_diff.percentile" = 75
 cavity_spacing = 10
 bed_bump_height = 1.0
@@ -40,7 +41,7 @@ flow_exp_b = 2
 "fringe_thickness.minimum" = 0.001
 "dispersed_thickness.initial" = 0.001
 CFL = 0.2
-n_years = 400
+n_years = 200
 save_every = 1
 "erosion.coefficient" = 2.7e-7
 "erosion.exponent" = 2
@@ -57,9 +58,9 @@ save_every = 1
 [fluxes]
 gate = 176
 "terminus.min_x" = -204326.0
-"terminus.max_x" = -201600.0
+"terminus.max_x" = -201875.0
 "terminus.min_y" = -2204225.0
-"terminus.max_y" = -2200540.0
-"fringe_thickness.cutoff" = 99.5
-"dispersed_thickness.cutoff" = 99.5
+"terminus.max_y" = -2200657.0
+"fringe_thickness.cutoff" = 95
+"dispersed_thickness.cutoff" = 95
 "dispersed.concentration" = 0.03

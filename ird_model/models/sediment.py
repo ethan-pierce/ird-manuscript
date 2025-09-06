@@ -121,7 +121,7 @@ def run_sediment_transport(tmg: TriangleModelGrid, config: dict) -> dict[str, Fi
 def setup_components(grid: StaticGrid, config: dict):
     """Set up the components for the sediment transport model."""
     eroder = SimpleGlacialEroder(grid)
-    eroder.update_param('rate_coefficient', config['erosion.coefficient'] * 31556926)
+    eroder.update_param('rate_coefficient', config['erosion.coefficient'])
     eroder.update_param('sliding_exponent', config['erosion.exponent'])
 
     advector = TVDAdvector(grid, fields_to_advect = ['fringe_thickness', 'dispersed_thickness'])

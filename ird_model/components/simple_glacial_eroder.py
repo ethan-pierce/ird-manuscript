@@ -43,7 +43,7 @@ class SimpleGlacialEroder(Component):
         self, 
         grid,
         params = {
-            'rate_coefficient': 2.7e-7 * 31556926, # 1 / (ms)
+            'rate_coefficient': 2.7e-7, # 1 / (m yr)
             'sliding_exponent': 2
         }
     ):
@@ -62,11 +62,12 @@ class SimpleGlacialEroder(Component):
 
     def run_one_step(self, dt: Float, fields: dict[str, Field]) -> dict[str, Field]:
         """Advance the model by one time step of size dt."""
-        sliding_velocity = jnp.abs(fields['sliding_velocity'].value)
+        sliding_velocity = jnp.abs(fields['sliding_velocity'].value * 31556926)
 
         erosion_rate = (
             self.params['rate_coefficient'] 
             * jnp.power(sliding_velocity, self.params['sliding_exponent'])
+            / 31556926
         )
 
         till_thickness = fields['till_thickness'].value + erosion_rate * dt
