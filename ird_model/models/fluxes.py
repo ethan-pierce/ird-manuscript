@@ -14,7 +14,7 @@ def calc_fluxes(tmg: TriangleModelGrid, config: dict):
     terminus, terminus_cells = find_terminus(tmg, config)
     terminus_velocity, cell_outflow_width = calc_velocity_outflow(tmg, config)
 
-    fringe_pct99 = np.percentile(tmg.at_node['fringe_thickness'][tmg.node_at_cell], config['fringe_thickness.cutoff'] - 0.5)
+    fringe_pct99 = np.percentile(tmg.at_node['fringe_thickness'][tmg.node_at_cell], config['fringe_thickness.cutoff'])
     fringe = np.where(tmg.at_node['fringe_thickness'][tmg.node_at_cell] > fringe_pct99, fringe_pct99, tmg.at_node['fringe_thickness'][tmg.node_at_cell])
     fringe_sediment = fringe[terminus_cells] * (1 - fringe_porosity) * 2700
     fringe_flux = np.sum(fringe_sediment * terminus_velocity * cell_outflow_width)

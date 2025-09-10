@@ -27,8 +27,9 @@ distributions = {
     'critical_depth': get_truncated_normal(mean = 100, sd = 50, low = 10, upp = 200),
     'ice_flow_coefficient': get_truncated_normal(mean = 2.4e-24, sd = 5e-24, low = 3.5e-25, upp = 2.4e-24),
     'sheet_conductivity': get_truncated_normal(mean = 0.05, sd = 0.02, low = 0.01, upp = 0.1),
-    'erosion_coefficient': get_truncated_normal(mean = 2.7e-7, sd = 5e-7, low = 1e-7, upp = 5e-7),
-    'erosion_exponent': get_truncated_normal(mean = 2, sd = 0.25, low = 1.5, upp = 2.5),
+    # 'erosion_exponent': get_truncated_normal(mean = 2, sd = 0.25, low = 1.5, upp = 2.5),
+    # 'erosion_coefficient': get_truncated_normal(mean = 2.7e-7, sd = 5e-7, low = 1e-7, upp = 5e-7)
+    'erosion_exponent': get_truncated_normal(mean = 2, sd = 0.25, low = 1.5, upp = 2.5)
 }
 
 def make_df(grid: TriangleModelGrid, config: dict):
@@ -87,7 +88,7 @@ def run_uncertainty(grid: TriangleModelGrid, config: dict):
     dfs = []
     errors = []
     
-    n = 10
+    n = 30
     for i in range(n):
         print(f'RUNNING MONTE CARLO ITERATION {i}')
         try:
@@ -95,6 +96,7 @@ def run_uncertainty(grid: TriangleModelGrid, config: dict):
                 start_time = time.time()
 
             parameters = {key: val.rvs() for key, val in distributions.items()}
+            parameters['erosion_coefficient'] = 10**(-1.67 * parameters['erosion_exponent'] - 3.33)
 
             config['sediment']['fringe.till_porosity'] = parameters['fringe_till_porosity']
             config['fluxes']['dispersed.concentration'] = parameters['dispersed_concentration']

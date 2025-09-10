@@ -55,7 +55,7 @@ for file in os.listdir('ird_model/models/checkpoints/sediment'):
         0
     )
 
-    if file == 'sydbrae.pickle':
+    if file == 'akullersuup-sermia.pickle':
         is_terminus = np.where(terminus == 1, 1, 0)
         plot_triangle_mesh(grid, is_terminus)
 
