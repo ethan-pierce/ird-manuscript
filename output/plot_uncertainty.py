@@ -117,7 +117,7 @@ y_upper = y_fit + critical_value * se_fit
 ax.fill_between(x_range, y_lower, y_upper, alpha=0.2, color='red', label='95% Confidence Interval')
 
 # Plot best fit line
-ax.plot(x_range, y_fit, 'r-', linewidth=3, label=f'Best Fit: log(SY) = {fit.slope:.2f} log(IY) - {-fit.intercept:.2f}')
+ax.plot(x_range, y_fit, 'r-', linewidth=3, label=f'Best Fit: SY = {10**fit.intercept:.4f} IY^{fit.slope:.2f}')
 
 # Add statistics text box
 stats_text = f'RMSE = {rmse:.3f} kg m⁻² a⁻¹\nR² = {R2:.3f}\np < 0.001'
@@ -128,8 +128,6 @@ ax.text(0.02, 0.98, stats_text, transform=ax.transAxes,
 # Professional axis labels with units
 ax.set_xlabel('log₁₀(Ice Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=12, fontweight='bold')
 ax.set_ylabel('log₁₀(Sediment Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=12, fontweight='bold')
-ax.set_title('Scaling Relationship Between Ice and Sediment Yield', 
-             fontsize=14, fontweight='bold', pad=20)
 
 # Improve legend - position it to avoid conflict with statistics box
 ax.legend(loc='lower right', frameon=True, fancybox=True, shadow=True)
