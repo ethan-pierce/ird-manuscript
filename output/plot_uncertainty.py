@@ -149,3 +149,100 @@ plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.95)
 plt.savefig('figures/ice-vs-sediment-yield-with-uq.png', dpi=300, bbox_inches='tight', 
             facecolor='white', edgecolor='none')
 plt.show()
+
+
+
+
+
+
+# Create comprehensive catchment statistics table
+print("\n" + "="*80)
+print("CATCHMENT SEDIMENT FLUX STATISTICS")
+print("="*80)
+
+# Calculate total sediment flux for each row
+df['total_flux'] = df['fringe_flux'] + df['dispersed_flux']
+
+# Group by glacier and calculate statistics from uncertainty runs
+catchment_stats = df.groupby(['glacier', 'region', 'area']).agg({
+    'fringe_flux': ['min', 'max', 'median', lambda x: x.quantile(0.75) - x.quantile(0.25)],  # IQR
+    'dispersed_flux': ['min', 'max', 'median', lambda x: x.quantile(0.75) - x.quantile(0.25)],
+    'total_flux': ['min', 'max', 'median', lambda x: x.quantile(0.75) - x.quantile(0.25)]
+}).round(0)
+
+# Flatten column names
+catchment_stats.columns = ['_'.join(col).strip() for col in catchment_stats.columns.values]
+catchment_stats = catchment_stats.reset_index()
+
+# Rename columns for clarity
+catchment_stats.columns = [
+    'Catchment', 'Region', 'Area (m²)', 
+    'Fringe Min', 'Fringe Max', 'Fringe Median', 'Fringe IQR',
+    'Dispersed Min', 'Dispersed Max', 'Dispersed Median', 'Dispersed IQR',
+    'Total Min', 'Total Max', 'Total Median', 'Total IQR'
+]
+
+# Reorder columns
+cols = ['Catchment', 'Region', 'Area (m²)', 
+        'Fringe Min', 'Fringe Max', 'Fringe Median', 'Fringe IQR',
+        'Dispersed Min', 'Dispersed Max', 'Dispersed Median', 'Dispersed IQR',
+        'Total Min', 'Total Max', 'Total Median', 'Total IQR']
+catchment_stats = catchment_stats[cols]
+
+# Sort by region, then by total median flux
+catchment_stats = catchment_stats.sort_values(['Region', 'Total Median'], ascending=[True, False])
+
+print("\nCATCHMENT-LEVEL STATISTICS:")
+print("-" * 80)
+# Select only median columns for display
+catchment_display = catchment_stats[['Catchment', 'Region', 'Area (m²)', 
+                                   'Fringe Median', 'Dispersed Median', 'Total Median']]
+
+print(catchment_display.to_string(index=False, formatters={
+    'Fringe Median': '{:,.0f}'.format,
+    'Dispersed Median': '{:,.0f}'.format,
+    'Total Median': '{:,.0f}'.format,
+    'Area (m²)': '{:,.1f}'.format
+}))
+
+# Calculate regional totals by summing catchment values
+print("\n" + "="*80)
+print("REGIONAL TOTALS")
+print("="*80)
+
+regional_totals = catchment_stats.groupby('Region').agg({
+    'Area (m²)': 'sum',
+    'Fringe Min': 'sum',
+    'Fringe Max': 'sum', 
+    'Fringe Median': 'sum',
+    'Fringe IQR': 'sum',
+    'Dispersed Min': 'sum',
+    'Dispersed Max': 'sum',
+    'Dispersed Median': 'sum',
+    'Dispersed IQR': 'sum',
+    'Total Min': 'sum',
+    'Total Max': 'sum',
+    'Total Median': 'sum',
+    'Total IQR': 'sum'
+}).round(0).reset_index()
+
+# Sort by total median flux
+regional_totals = regional_totals.sort_values('Total Median', ascending=False)
+
+# Select only median columns for display
+regional_display = regional_totals[['Region', 'Area (m²)', 
+                                   'Fringe Median', 'Dispersed Median', 'Total Median']]
+
+print("\nREGIONAL TOTALS:")
+print("-" * 80)
+print(regional_display.to_string(index=False, formatters={
+    'Fringe Median': '{:,.0f}'.format,
+    'Dispersed Median': '{:,.0f}'.format,
+    'Total Median': '{:,.0f}'.format,
+    'Area (m²)': '{:,.1f}'.format
+}))
+
+# Save only the catchment statistics table
+catchment_stats.to_csv('output/catchment_sediment_flux_statistics.csv', index=False)
+
+print(f"\nTable saved to: output/catchment_sediment_flux_statistics.csv")
