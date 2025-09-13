@@ -41,6 +41,9 @@ for file in os.listdir('ird_model/models/checkpoints/uncertainty/base'):
 df = pd.concat(dfs, ignore_index = True)
 df['ice_yield'] = df['ice_discharge'] * 1e12 / df['area']
 df['sed_yield'] = (df['fringe_flux'] + df['dispersed_flux']) / df['area']
+df['dispersed_yield'] = df['dispersed_flux'] / df['area']
+df['fringe_yield'] = df['fringe_flux'] / df['area']
+
 
 fit = linregress(np.log10(df['ice_yield']), np.log10(df['sed_yield']))
 predicted_log_sed_yield = fit.slope * np.log10(df['ice_yield']) + fit.intercept
@@ -101,7 +104,35 @@ violin_plot = sns.violinplot(
     linewidth=1.5  # Thicker violin outlines for clarity
 )
 
-# Labels removed for cleaner visualization
+# Add unobtrusive glacier labels positioned close to each violin
+# Get unique glaciers and their positions
+glacier_groups = df.groupby('glacier')
+glacier_names = list(glacier_groups.groups.keys())
+glacier_positions = []
+
+# Calculate median x-position for each glacier group
+for glacier in glacier_names:
+    glacier_data = glacier_groups.get_group(glacier)
+    median_x = glacier_data['log_ice_yield'].median()
+    glacier_positions.append(median_x)
+
+# Sort glaciers by their x-position for consistent labeling
+sorted_indices = np.argsort(glacier_positions)
+sorted_glaciers = [glacier_names[i] for i in sorted_indices]
+sorted_positions = [glacier_positions[i] for i in sorted_indices]
+
+# Add labels with improved collision detection
+# First, collect all violin tops and positions
+violin_data = []
+for glacier, pos in zip(sorted_glaciers, sorted_positions):
+    glacier_data = glacier_groups.get_group(glacier)
+    violin_top = glacier_data['log_sed_yield'].max()
+    violin_data.append((glacier, pos, violin_top))
+
+# Sort by x-position for left-to-right processing
+violin_data.sort(key=lambda x: x[1])
+
+# Labels removed - clean violin plot without glacier labels
 
 # Add best fit line with confidence intervals
 x_range = np.linspace(df['log_ice_yield'].min(), df['log_ice_yield'].max(), 100)
@@ -135,15 +166,21 @@ ax.legend(loc='lower right', frameon=True, fancybox=True, shadow=True)
 # Improve grid
 ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
 
-# Set y-axis limits for clean visualization without labels
+# Set axis limits for clean violin plot without labels
 y_min = df['log_sed_yield'].min()
 y_max = df['log_sed_yield'].max()
-ax.set_ylim(bottom=y_min - 0.1,  # Small buffer
-            top=y_max + 0.1)  # Small buffer
+x_min = df['log_ice_yield'].min()
+x_max = df['log_ice_yield'].max()
 
-# Adjust layout with extra padding for labels
+# Normal plot limits without extra space for labels
+ax.set_ylim(bottom=y_min - 0.1,  # Small buffer at bottom
+            top=y_max + 0.1)  # Small buffer at top
+ax.set_xlim(left=x_min - 0.1,  # Small buffer at left
+            right=x_max + 0.1)  # Small buffer at right
+
+# Adjust layout for clean violin plot without labels
 plt.tight_layout()
-plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.95)
+plt.subplots_adjust(top=0.95, bottom=0.1, left=0.1, right=0.95)  # Normal padding without labels
 
 # Save with high quality
 plt.savefig('figures/ice-vs-sediment-yield-with-uq.png', dpi=300, bbox_inches='tight', 
@@ -246,3 +283,158 @@ print(regional_display.to_string(index=False, formatters={
 catchment_stats.to_csv('output/catchment_sediment_flux_statistics.csv', index=False)
 
 print(f"\nTable saved to: output/catchment_sediment_flux_statistics.csv")
+
+# Create comprehensive catchment export with all requested information
+print("\n" + "="*80)
+print("CREATING COMPREHENSIVE CATCHMENT EXPORT")
+print("="*80)
+
+# Get gate coordinates from the GeoJSON file
+gate_coords = {}
+for idx, row in area_at_gates.iterrows():
+    gate_coords[row['Gate']] = (row.geometry.x, row.geometry.y)
+
+# Create comprehensive export dataframe using uniform methodology
+comprehensive_export = []
+
+# Use GrISdf as the base, with ice discharge from gate_D and sediment flux from linear fit
+for idx, row in GrISdf.iterrows():
+    gate_number = row['Gate']
+    area = row['Area']
+    gate_x, gate_y = gate_coords.get(gate_number, (None, None))
+    
+    # Get ice discharge from gate_D data
+    ice_discharge = gate_discharge[str(int(gate_number))].iloc[1744:2853].median() * 1e12  # Convert to kg/yr
+    
+    # Calculate ice yield
+    ice_yield = ice_discharge / area
+    
+    # Calculate sediment yield using the linear fit
+    log_sediment_yield = fit.slope * np.log10(ice_yield) + fit.intercept
+    sediment_yield = 10**(log_sediment_yield)
+    
+    # Calculate total sediment flux
+    total_flux = sediment_yield * area
+    
+    comprehensive_export.append({
+        'Catchment': f'Gate {gate_number}',
+        'Area (m²)': area,
+        'Ice Discharge (kg/yr)': ice_discharge,
+        'Ice Yield (kg m⁻² yr⁻¹)': ice_yield,
+        'Sediment Yield (kg m⁻² yr⁻¹)': sediment_yield,
+        'Total Flux (kg/yr)': total_flux,
+        'Gate Number': gate_number,
+        'Gate Longitude': gate_x,
+        'Gate Latitude': gate_y
+    })
+
+# Convert to DataFrame and save
+comprehensive_df = pd.DataFrame(comprehensive_export)
+comprehensive_df = comprehensive_df.sort_values('Total Flux (kg/yr)', ascending=False)
+
+# Save comprehensive export
+comprehensive_df.to_csv('output/comprehensive_catchment_export.csv', index=False)
+
+# Define yield fit range
+min_yield = np.min(df['ice_yield'])
+max_yield = np.max(df['ice_yield'])
+
+# Calculate percentages for catchments
+catchments_inside = comprehensive_df[
+    (comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] < max_yield) &
+    (comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] > min_yield)
+].shape[0]
+
+catchments_below = comprehensive_df[
+    comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] <= min_yield
+].shape[0]
+
+catchments_above = comprehensive_df[
+    comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] >= max_yield
+].shape[0]
+
+total_catchments = comprehensive_df.shape[0]
+
+# Calculate percentages for ice flux
+ice_flux_inside = comprehensive_df[
+    (comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] < max_yield) &
+    (comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] > min_yield)
+]['Ice Discharge (kg/yr)'].sum()
+
+ice_flux_below = comprehensive_df[
+    comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] <= min_yield
+]['Ice Discharge (kg/yr)'].sum()
+
+ice_flux_above = comprehensive_df[
+    comprehensive_df['Ice Yield (kg m⁻² yr⁻¹)'] >= max_yield
+]['Ice Discharge (kg/yr)'].sum()
+
+total_ice_flux = comprehensive_df['Ice Discharge (kg/yr)'].sum()
+
+# Print results
+print(f'Yield fit range: {min_yield:.3f} to {max_yield:.3f} kg m⁻² yr⁻¹')
+print(f'\nCatchments:')
+print(f'  Below fit range: {catchments_below/total_catchments*100:.2f}% ({catchments_below}/{total_catchments})')
+print(f'  Inside fit range: {catchments_inside/total_catchments*100:.2f}% ({catchments_inside}/{total_catchments})')
+print(f'  Above fit range: {catchments_above/total_catchments*100:.2f}% ({catchments_above}/{total_catchments})')
+
+print(f'\nIce flux:')
+print(f'  Below fit range: {ice_flux_below/total_ice_flux*100:.2f}%')
+print(f'  Inside fit range: {ice_flux_inside/total_ice_flux*100:.2f}%')
+print(f'  Above fit range: {ice_flux_above/total_ice_flux*100:.2f}%')
+
+print("\nCOMPREHENSIVE CATCHMENT EXPORT:")
+print("-" * 100)
+print(f"\nComprehensive export saved to: output/comprehensive_catchment_export.csv")
+
+
+
+fluxes = {
+    'IRD transport (this study)': [0.454, (high - mean) * 1e-3, (mean - low) * 1e-3],
+    'Fluvial transport (Overeem et al., 2017)': [0.892, 0.374, 0.374],
+    'Fjord deposition (Andresen et al., 2024)': [1.324, 0.79, 0.79]
+}
+
+# Create bar plot comparing sediment fluxes
+fig_bar, ax_bar = plt.subplots(figsize=(8, 6))
+
+# Extract data for plotting
+studies = list(fluxes.keys())
+# Create multi-line labels for better fit
+study_labels = [
+    'IRD transport\n(this study)',
+    'Fluvial transport\n(Overeem et al., 2017)',
+    'Fjord deposition\n(Andresen et al., 2024)'
+]
+means = [fluxes[study][0] for study in studies]
+errors_low = [fluxes[study][2] for study in studies]  # Lower error
+errors_high = [fluxes[study][1] for study in studies]  # Upper error
+
+# Create bar plot with error bars
+bars = ax_bar.bar(range(len(studies)), means, 
+                  yerr=[errors_low, errors_high], 
+                  capsize=5, width=0.4,
+                  color=['#8B4A6B', '#4A6B8B', '#6B8B4A'],  # More sophisticated colors
+                  alpha=0.85, edgecolor='#2C2C2C', linewidth=1.2)
+
+# Customize the plot
+ax_bar.set_ylabel('Sediment Flux (Gt yr⁻¹)', fontsize=18, fontweight='bold')
+ax_bar.grid(True, alpha=0.3, axis='y')
+
+# Add value labels on top of bars
+for i, (bar, mean_val) in enumerate(zip(bars, means)):
+    height = bar.get_height()
+    ax_bar.text(bar.get_x() + bar.get_width()/2., height + errors_high[i] + 0.05,
+                f'{mean_val:.3f}', ha='center', va='bottom', 
+                fontweight='bold', fontsize=16)
+
+# Set x-axis labels with multi-line text
+ax_bar.set_xticks(range(len(studies)))
+ax_bar.set_xticklabels(study_labels, fontsize=16, ha='center')
+plt.yticks(fontsize=16)
+plt.tight_layout()
+
+# Save the bar plot
+plt.savefig('figures/fluxes-barplot.png', dpi=300, bbox_inches='tight', 
+            facecolor='white', edgecolor='none')
+plt.show()

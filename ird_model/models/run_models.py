@@ -101,12 +101,18 @@ def run_stage(stage, config, prev_stage = None):
         fringe_flux, dispersed_flux, ice_flux = calc_fluxes(prev_data, config)
         discharge_df = pd.read_csv('ird_model/models/inputs/gate_D.csv', header = 0)
         ice_discharge = discharge_df[str(config['fluxes']['gate'])].iloc[1744:2853].median()
+        contributing_area = np.sum(
+            ((prev_data.at_node['effective_pressure'] > 68000) 
+            & (np.abs(prev_data.at_node['sliding_velocity']) > 0)
+            & (prev_data.at_node['basal_melt_rate'] > 0))
+        * prev_data.cell_area_at_node)
 
         df = pd.DataFrame(
             {
                 'glacier': config['name'],
                 'region': config['region'],
                 'area': np.sum(prev_data.cell_area_at_node),
+                'contributing_area': np.float64(contributing_area),
                 'ice_discharge': np.float64(ice_discharge),
                 'model_ice_flux': np.float64(ice_flux),
                 'fringe_flux': np.float64(fringe_flux),
@@ -119,7 +125,8 @@ def run_stage(stage, config, prev_stage = None):
                 'fringe_grain_radius': np.float64(config['sediment']['fringe.till_grain_radius']),
                 'fringe_film_thickness': np.float64(config['sediment']['fringe.film_thickness']),
                 'dispersed_concentration': np.float64(config['fluxes']['dispersed.concentration']),
-                'critical_depth': np.float64(config['sediment']['critical_depth'])
+                'critical_depth': np.float64(config['sediment']['critical_depth']),
+                'max_sliding_velocity': np.float64(np.abs(prev_data.at_node['sliding_velocity']).max())
             },
             index = [0]
         )
