@@ -23,20 +23,7 @@ ice_yield = (df['ice_discharge'] * 1e12 / df['area']).to_numpy()
 sed_yield = ((df['fringe_flux'] + df['dispersed_flux']) / df['area']).to_numpy()
 
 print(df['contributing_area'].sum() / df['area'].sum())
-quit()
 
-# sns.set_theme(style = 'darkgrid', font_scale = 1.5)
-# fig, ax = plt.subplots(figsize = (12, 8))
-# plt.scatter(df['max_sliding_velocity'] * 31556926, sed_yield)
-# plt.xscale('log')
-# plt.yscale('log')
-# plt.xlabel('Max Sliding Velocity (m/yr)')
-# plt.ylabel('Sediment Yield (kg m$^{-2}$ yr$^{-1}$)')
-# plt.show()
-# quit()
-
-# iy_fit = ice_yield[np.log10(sed_yield) > -2]
-# sy_fit = sed_yield[np.log10(sed_yield) > -2]
 fit = linregress(np.log10(ice_yield), np.log10(sed_yield))
 predicted_log_sed_yield = fit.slope * np.log10(ice_yield) + fit.intercept
 predicted_sed_yield = 10**(predicted_log_sed_yield)

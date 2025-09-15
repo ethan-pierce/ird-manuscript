@@ -11,3 +11,7 @@ mv data/19458?gbrecs=true data/basalmelt.nc
 echo "Downloading MEaSUREs_120m.nc"
 wget -P data/ https://its-live-data.s3.amazonaws.com/velocity_mosaic/v2/static/ITS_LIVE_velocity_120m_RGI05A_0000_v02.nc
 mv data/ITS_LIVE_velocity_120m_RGI05A_0000_v02.nc data/MEaSUREs_120m.nc
+
+echo "Downloading discharge data"
+wget -P data/ https://dataverse.geus.dk/api/access/datafile/93548?gbrecs=true
+mv data/93548?gbrecs=true data/gate_D.csv

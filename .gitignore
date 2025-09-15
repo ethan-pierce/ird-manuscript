@@ -3,6 +3,9 @@ bib.bib# pixi environments
 .pixi/*
 !.pixi/config.toml
 
+# archived models
+ird_model/models/archive/
+
 # large data files
 data/BedMachineGreenland-v5.nc
 data/basalmelt.nc
@@ -12,3 +15,11 @@ data/MEaSUREs_120m.nc
 
 # checkpoints
 ird_model/models/checkpoints/
+
+# figures
+figures/
+
+# large CSV data files
+data/gate_D.csv
+ird_model/models/inputs/gate_D.csv
+ird_model/models/archive/gate_D.csv
