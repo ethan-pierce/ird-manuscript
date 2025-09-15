@@ -33,25 +33,7 @@ df_ce = sco18
 df_ce['Region'] = 'Kangertittivaq'
 print(df_ce.shape[0])
 
-# print(len(sco18['Isbj.nr.'].unique()))
-# sco18.loc['sd W%', 27] = 40
-# sco18['SSC_mass'] = sco18['sd W%'].astype('float64')
-# sco18 = sco18[['SSC_mass']]
-# sco19 = pd.read_csv('field-data/East_Greenland_2019_ssc.csv', nrows = 76)
-# print(sco19.shape[0]/3)
-# sco19['SSC_mass'] = ((sco19['Sed. G'] / sco19['Sample g']) * 100).astype('float64')
-# sco19 = sco19[['SSC_mass']]
-# df_ce = pd.merge(sco18, sco19, how = 'outer')
-# df_ce = sco18
-# df_ce = df_ce[df_ce['SSC_mass'] > cut]
-# df_ce['Region'] = 'Kangertittivaq'
-
-
 df = pd.concat([df_sw, df_cw, df_ce])
-print(df.head())
-print(df.groupby('Region')['SSC_mass'].describe())
-print(df.shape)
-quit()
 
 fig, ax = plt.subplots(figsize = (11, 6))
 sns.despine(fig)
