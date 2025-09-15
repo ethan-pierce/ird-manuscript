@@ -18,13 +18,13 @@ matplotlib.rcParams['font.family'] = 'DejaVu Sans'
 plt.style.use('seaborn-v0_8-whitegrid')
 sns.set_palette("husl")
 plt.rcParams.update({
-    'font.size': 12,
-    'axes.titlesize': 14,
-    'axes.labelsize': 12,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
-    'legend.fontsize': 10,
-    'figure.titlesize': 16,
+    'font.size': 20,
+    'axes.titlesize': 22,
+    'axes.labelsize': 20,
+    'xtick.labelsize': 18,
+    'ytick.labelsize': 18,
+    'legend.fontsize': 18,
+    'figure.titlesize': 24,
     'font.family': 'DejaVu Sans',
     'axes.spines.top': False,
     'axes.spines.right': False,
@@ -145,20 +145,20 @@ y_lower = y_fit - critical_value * se_fit
 y_upper = y_fit + critical_value * se_fit
 
 # Plot confidence band
-ax.fill_between(x_range, y_lower, y_upper, alpha=0.2, color='red', label='95% Confidence Interval')
+ax.fill_between(x_range, y_lower, y_upper, alpha=0.2, color='blue', label='95% Confidence Interval')
 
 # Plot best fit line
-ax.plot(x_range, y_fit, 'r-', linewidth=3, label=f'Best Fit: SY = {10**fit.intercept:.4f} IY^{fit.slope:.2f}')
+ax.plot(x_range, y_fit, 'b-', linewidth=3, label=f'Best Fit: SY = {10**fit.intercept:.4f} IY^{fit.slope:.2f}')
 
 # Add statistics text box
 stats_text = f'RMSE = {rmse:.3f} kg m⁻² a⁻¹\nR² = {R2:.3f}\np < 0.001'
 ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, 
         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
-        fontsize=10, fontweight='bold')
+        fontsize=18, fontweight='bold')
 
 # Professional axis labels with units
-ax.set_xlabel('log₁₀(Ice Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=12, fontweight='bold')
-ax.set_ylabel('log₁₀(Sediment Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=12, fontweight='bold')
+ax.set_xlabel('log₁₀(Ice Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=20, fontweight='bold')
+ax.set_ylabel('log₁₀(Sediment Yield) [kg m$^{-2}$ yr$^{-1}$]', fontsize=20, fontweight='bold')
 
 # Improve legend - position it to avoid conflict with statistics box
 ax.legend(loc='lower right', frameon=True, fancybox=True, shadow=True)
