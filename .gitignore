@@ -23,3 +23,18 @@ figures/
 data/gate_D.csv
 ird_model/models/inputs/gate_D.csv
 ird_model/models/archive/gate_D.csv
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
